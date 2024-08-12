@@ -138,6 +138,7 @@ public class Finding implements Serializable {
                  , "PROJECT"."UUID"
                  , "PROJECT"."NAME"
                  , "PROJECT"."VERSION"
+                 , "PROJECT"."ENHANCED_STATUS"
               FROM "COMPONENT"
              INNER JOIN "COMPONENTS_VULNERABILITIES"
                 ON "COMPONENT"."ID" = "COMPONENTS_VULNERABILITIES"."COMPONENT_ID"
@@ -219,6 +220,7 @@ public class Finding implements Serializable {
             optValue(vulnerability, "published", o[28]);
             optValue(component, "projectName", o[30]);
             optValue(component, "projectVersion", o[31]);
+            optValue(component, "projectEnhancedStatus", o[32]);
         }
     }
 

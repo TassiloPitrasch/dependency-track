@@ -91,7 +91,7 @@ public class BomResourceTest extends ResourceTest {
 
     @Test
     public void exportProjectAsCycloneDxTest() {
-        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component c = new Component();
         c.setProject(project);
         c.setName("sample-component");
@@ -334,7 +334,7 @@ public class BomResourceTest extends ResourceTest {
 
     @Test
     public void exportProjectAsCycloneDxLicenseTest() {
-        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component c = new Component();
         c.setProject(project);
         c.setName("sample-component");
@@ -790,7 +790,7 @@ public class BomResourceTest extends ResourceTest {
 
     @Test
     public void exportComponentAsCycloneDx() {
-        Project project = qm.createProject("Acme Example", null, null, null, null, null, false, false);
+        Project project = qm.createProject("Acme Example", null, null, null, null, null, Project.EnhancedStatus.ARCHIVED, false);
         Component c = new Component();
         c.setProject(project);
         c.setName("sample-component");
@@ -819,7 +819,7 @@ public class BomResourceTest extends ResourceTest {
     @Test
     public void uploadBomTest() throws Exception {
         initializeWithPermissions(Permissions.BOM_UPLOAD);
-        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         String bomString = Base64.getEncoder().encodeToString(resourceToByteArray("/unit/bom-1.xml"));
         BomSubmitRequest request = new BomSubmitRequest(project.getUuid().toString(), null, null, null, false, false, bomString);
         Response response = jersey.target(V1_BOM).request()

@@ -35,6 +35,7 @@ import org.dependencytrack.persistence.QueryManager;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -168,14 +169,17 @@ public class PortfolioMetricsUpdateTask implements Subscriber {
 
     private List<Project> fetchNextActiveProjectsPage(final PersistenceManager pm, final Long lastId) throws Exception {
         try (final Query<Project> query = pm.newQuery(Project.class)) {
+            var params = new HashMap<String, Object>();
+            params.put("archived", Project.EnhancedStatus.ARCHIVED);
             if (lastId == null) {
-                query.setFilter("(active == null || active == true)");
+                query.setFilter("enhancedStatus != :archived");
             } else {
-                query.setFilter("(active == null || active == true) && id < :lastId");
-                query.setParameters(lastId);
+                params.put("lastId", lastId);
+                query.setFilter("enhancedStatus != :archived && id < :lastId");
             }
             query.setOrdering("id DESC");
             query.range(0, BATCH_SIZE);
+            query.setNamedParameters(params);
             query.getFetchPlan().setGroup(Project.FetchGroup.METRICS_UPDATE.name());
             return List.copyOf(query.executeList());
         }
