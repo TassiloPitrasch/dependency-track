@@ -250,6 +250,9 @@ public class FindingResource extends AlpineResource {
     @PermissionRequired(Permissions.Constants.VIEW_VULNERABILITY)
     public Response getAllFindings(@Parameter(description = "Show inactive projects")
                                    @QueryParam("showInactive") boolean showInactive,
+                                   @Parameter(description = "Filters by Project Status")
+                                   @QueryParam(value = "enhancedStatus")
+                                   List<Project.EnhancedStatus> enhancedStatusList,
                                    @Parameter(description = "Show suppressed findings")
                                    @QueryParam("showSuppressed") boolean showSuppressed,
                                    @Parameter(description = "Filter by severity")
@@ -279,6 +282,10 @@ public class FindingResource extends AlpineResource {
                                    @Parameter(description = "Filter CVSSv3 from this Value")
                                    @QueryParam("cvssv3To") String cvssv3To) {
         try (QueryManager qm = new QueryManager(getAlpineRequest())) {
+            if (enhancedStatusList.isEmpty()) {
+                enhancedStatusList = QueryManager.getEnhancedStatusList(!showInactive);
+            }
+            List<Project.EnhancedStatus> finalEnhancedStatusList = enhancedStatusList;
             final Map<String, String> filters = new HashMap<>();
             filters.put("severity", severity);
             filters.put("analysisStatus", analysisStatus);
@@ -293,7 +300,7 @@ public class FindingResource extends AlpineResource {
             filters.put("cvssv2To", cvssv2To);
             filters.put("cvssv3From", cvssv3From);
             filters.put("cvssv3To", cvssv3To);
-            final PaginatedResult result = qm.getAllFindings(filters, showSuppressed, showInactive);
+            final PaginatedResult result = qm.getAllFindings(filters, showSuppressed, finalEnhancedStatusList);
             return Response.ok(result.getObjects()).header(TOTAL_COUNT_HEADER, result.getTotal()).build();
         }
     }
@@ -317,6 +324,9 @@ public class FindingResource extends AlpineResource {
     @PermissionRequired(Permissions.Constants.VIEW_VULNERABILITY)
     public Response getAllFindings(@Parameter(description = "Show inactive projects")
                                    @QueryParam("showInactive") boolean showInactive,
+                                   @Parameter(description = "Filters by Project Status")
+                                   @QueryParam(value = "enhancedStatus")
+                                   List<Project.EnhancedStatus> enhancedStatusList,
                                    @Parameter(description = "Filter by severity")
                                    @QueryParam("severity") String severity,
                                    @Parameter(description = "Filter published from this date")
@@ -340,6 +350,10 @@ public class FindingResource extends AlpineResource {
                                    @Parameter(description = "Filter occurrences in projects to this value")
                                    @QueryParam("occurrencesTo") String occurrencesTo) {
         try (QueryManager qm = new QueryManager(getAlpineRequest())) {
+            if (enhancedStatusList.isEmpty()) {
+                enhancedStatusList = QueryManager.getEnhancedStatusList(!showInactive);
+            }
+            List<Project.EnhancedStatus> finalEnhancedStatusList = enhancedStatusList;
             final Map<String, String> filters = new HashMap<>();
             filters.put("severity", severity);
             filters.put("publishDateFrom", publishDateFrom);
@@ -352,7 +366,7 @@ public class FindingResource extends AlpineResource {
             filters.put("cvssv3To", cvssv3To);
             filters.put("occurrencesFrom", occurrencesFrom);
             filters.put("occurrencesTo", occurrencesTo);
-            final PaginatedResult result = qm.getAllFindingsGroupedByVulnerability(filters, showInactive);
+            final PaginatedResult result = qm.getAllFindingsGroupedByVulnerability(filters, finalEnhancedStatusList);
             return Response.ok(result.getObjects()).header(TOTAL_COUNT_HEADER, result.getTotal()).build();
         }
     }

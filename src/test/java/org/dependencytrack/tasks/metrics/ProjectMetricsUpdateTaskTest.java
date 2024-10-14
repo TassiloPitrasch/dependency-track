@@ -251,7 +251,7 @@ public class ProjectMetricsUpdateTaskTest extends AbstractMetricsUpdateTaskTest 
     @Test
     public void testCollectionProjectMetricsAggregatingAllChildren() {
         var project = new Project();
-        project.setActive(true);
+        project.setEnhancedStatus(Project.EnhancedStatus.IN_DEVELOPMENT);
         project.setName("testCollectionProjectMetricsAggregatingAllChildren");
         project.setCollectionLogic(ProjectCollectionLogic.AGGREGATE_DIRECT_CHILDREN);
         project = qm.createProject(project, List.of(), false);
@@ -288,7 +288,7 @@ public class ProjectMetricsUpdateTaskTest extends AbstractMetricsUpdateTaskTest 
     public void testCollectionProjectMetricsAggregatingTaggedChildren() {
         Tag tag = qm.createTag("prod");
         var project = new Project();
-        project.setActive(true);
+        project.setEnhancedStatus(Project.EnhancedStatus.IN_DEVELOPMENT);
         project.setName("testCollectionProjectMetricsAggregatingTaggedChildren");
         project.setCollectionLogic(ProjectCollectionLogic.AGGREGATE_DIRECT_CHILDREN_WITH_TAG);
         project.setCollectionTag(tag);
@@ -330,7 +330,7 @@ public class ProjectMetricsUpdateTaskTest extends AbstractMetricsUpdateTaskTest 
     @Test
     public void testCollectionProjectMetricsAggregatingLatestChildren() {
         var project = new Project();
-        project.setActive(true);
+        project.setEnhancedStatus(Project.EnhancedStatus.IN_DEVELOPMENT);
         project.setName("testCollectionProjectMetricsAggregatingAllChildren");
         project.setCollectionLogic(ProjectCollectionLogic.AGGREGATE_LATEST_VERSION_CHILDREN);
         project = qm.createProject(project, List.of(), false);
@@ -372,7 +372,7 @@ public class ProjectMetricsUpdateTaskTest extends AbstractMetricsUpdateTaskTest 
 
     private Project prepareProjectWithVulns(String prefix, Project parent, String version) {
         var project = new Project();
-        project.setActive(true);
+        project.setEnhancedStatus(Project.EnhancedStatus.IN_DEVELOPMENT);
         project.setParent(parent);
         project.setName(prefix + "acme-app");
         project.setVersion(version);

@@ -124,7 +124,7 @@ public class VersionDistancePolicyEvaluatorTest extends PersistenceCapableTest {
 
         final var project = new Project();
         project.setName("name");
-        project.setActive(true);
+        project.setEnhancedStatus(Project.EnhancedStatus.IN_DEVELOPMENT);
 
         final var metaComponent = new RepositoryMetaComponent();
         metaComponent.setRepositoryType(RepositoryType.MAVEN);

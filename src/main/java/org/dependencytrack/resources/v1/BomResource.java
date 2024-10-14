@@ -339,9 +339,7 @@ public class BomResource extends AlpineResource {
                             }
                         }
 
-                        project = qm.createProject(trimmedProjectName, null,
-                                StringUtils.trimToNull(request.getProjectVersion()), request.getProjectTags(), parent,
-                                null, true, request.isLatestProjectVersion(), true);
+                        project = qm.createProject(StringUtils.trimToNull(request.getProjectName()), null, StringUtils.trimToNull(request.getProjectVersion()), request.getProjectTags(), parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, request.isLatestProjectVersion(), true);
                         Principal principal = getPrincipal();
                         qm.updateNewProjectACL(project, principal);
                     } else {
@@ -447,7 +445,7 @@ public class BomResource extends AlpineResource {
                         final List<org.dependencytrack.model.Tag> tags = (projectTags != null && !projectTags.isBlank())
                                 ? Arrays.stream(projectTags.split(",")).map(String::trim).filter(not(String::isEmpty)).map(Tag::new).toList()
                                 : null;
-                        project = qm.createProject(trimmedProjectName, null, trimmedProjectVersion, tags, parent, null, true, isLatest, true);
+                        project = qm.createProject(trimmedProjectName, null, trimmedProjectVersion, tags, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, isLatest, true);
                         Principal principal = getPrincipal();
                         qm.updateNewProjectACL(project, principal);
                     } else {

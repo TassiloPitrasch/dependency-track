@@ -117,7 +117,7 @@ public class NotificationRouterTest extends PersistenceCapableTest {
         rule.setNotifyOn(notifyOn);
         // Creates a project which will later be matched on
         List<Project> projects = new ArrayList<>();
-        Project project = qm.createProject("Test Project", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Test Project", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         projects.add(project);
         rule.setProjects(projects);
         // Creates a new notification
@@ -148,7 +148,7 @@ public class NotificationRouterTest extends PersistenceCapableTest {
         rule.setNotifyOn(notifyOn);
         // Creates a project which will later be matched on
         List<Project> projects = new ArrayList<>();
-        Project project = qm.createProject("Test Project", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Test Project", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         projects.add(project);
         rule.setProjects(projects);
         // Creates a new notification
@@ -158,7 +158,7 @@ public class NotificationRouterTest extends PersistenceCapableTest {
         notification.setLevel(NotificationLevel.INFORMATIONAL);
         // Notification should be limited to only specific projects - Set the projects which are affected by the notification event
         Set<Project> affectedProjects = new HashSet<>();
-        Project affectedProject = qm.createProject("Affected Project", null, "1.0", null, null, null, true, false);
+        Project affectedProject = qm.createProject("Affected Project", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         affectedProjects.add(affectedProject);
         Component affectedComponent = new Component();
         affectedComponent.setProject(affectedProject);
@@ -210,7 +210,7 @@ public class NotificationRouterTest extends PersistenceCapableTest {
         rule.setPublisherConfig("{\"destination\":\"testDestination\"}");
         // Creates a project which will later be matched on
         List<Project> projects = new ArrayList<>();
-        Project firstProject = qm.createProject("Test Project 1", null, "1.0", null, null, null, true, false);
+        Project firstProject = qm.createProject("Test Project 1", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         projects.add(firstProject);
         rule.setProjects(projects);
         // Creates a new notification
@@ -219,7 +219,7 @@ public class NotificationRouterTest extends PersistenceCapableTest {
         notification.setGroup(NotificationGroup.NEW_VULNERABILITY.name());
         notification.setLevel(NotificationLevel.INFORMATIONAL);
         // Notification should be limited to only specific projects - Set the projects which are affected by the notification event
-        Project secondProject = qm.createProject("Test Project 2", null, "1.0", null, null, null, true, false);
+        Project secondProject = qm.createProject("Test Project 2", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Set<Project> affectedProjects = new HashSet<>();
         affectedProjects.add(firstProject);
         affectedProjects.add(secondProject);
@@ -330,13 +330,13 @@ public class NotificationRouterTest extends PersistenceCapableTest {
 
     @Test
     public void testNewVulnerabilityIdentifiedLimitedToProject() {
-        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentA = new Component();
         componentA.setProject(projectA);
         componentA.setName("Component A");
         componentA = qm.createComponent(componentA, false);
 
-        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, true, false);
+        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentB = new Component();
         componentB.setProject(projectB);
         componentB.setName("Component B");
@@ -364,13 +364,13 @@ public class NotificationRouterTest extends PersistenceCapableTest {
 
     @Test
     public void testNewVulnerableDependencyLimitedToProject() {
-        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentA = new Component();
         componentA.setProject(projectA);
         componentA.setName("Component A");
         componentA = qm.createComponent(componentA, false);
 
-        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, true, false);
+        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentB = new Component();
         componentB.setProject(projectB);
         componentB.setName("Component B");
@@ -398,8 +398,8 @@ public class NotificationRouterTest extends PersistenceCapableTest {
 
     @Test
     public void testBomConsumedOrProcessedLimitedToProject() {
-        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, true, false);
-        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final NotificationPublisher publisher = createSlackPublisher();
 
@@ -423,8 +423,8 @@ public class NotificationRouterTest extends PersistenceCapableTest {
 
     @Test
     public void testBomProcessingFailedLimitedToProject() {
-        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, true, false);
-        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final NotificationPublisher publisher = createSlackPublisher();
 
@@ -448,8 +448,8 @@ public class NotificationRouterTest extends PersistenceCapableTest {
 
     @Test
     public void testBomValidationFailedLimitedToProject() {
-        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, true, false);
-        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final NotificationPublisher publisher = createSlackPublisher();
 
@@ -473,8 +473,8 @@ public class NotificationRouterTest extends PersistenceCapableTest {
 
     @Test
     public void testVexConsumedOrProcessedLimitedToProject() {
-        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, true, false);
-        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final NotificationPublisher publisher = createSlackPublisher();
 
@@ -498,13 +498,13 @@ public class NotificationRouterTest extends PersistenceCapableTest {
 
     @Test
     public void testPolicyViolationIdentifiedLimitedToProject() {
-        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentA = new Component();
         componentA.setProject(projectA);
         componentA.setName("Component A");
         componentA = qm.createComponent(componentA, false);
 
-        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, true, false);
+        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentB = new Component();
         componentB.setProject(projectB);
         componentB.setName("Component B");
@@ -532,8 +532,8 @@ public class NotificationRouterTest extends PersistenceCapableTest {
 
     @Test
     public void testAnalysisDecisionChangeLimitedToProject() {
-        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, true, false);
-        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final NotificationPublisher publisher = createSlackPublisher();
 
@@ -557,13 +557,13 @@ public class NotificationRouterTest extends PersistenceCapableTest {
 
     @Test
     public void testViolationAnalysisDecisionChangeLimitedToProject() {
-        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("Project A", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentA = new Component();
         componentA.setProject(projectA);
         componentA.setName("Component A");
         componentA = qm.createComponent(componentA, false);
 
-        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, true, false);
+        final Project projectB = qm.createProject("Project B", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentB = new Component();
         componentB.setProject(projectB);
         componentB.setName("Component B");
@@ -599,10 +599,10 @@ public class NotificationRouterTest extends PersistenceCapableTest {
         rule.setNotifyOn(notifyOn);
         // Creates a project which will later be matched on
         List<Project> projects = new ArrayList<>();
-        Project grandParent = qm.createProject("Test Project Grandparent", null, "1.0", null, null, null, true, false);
-        Project parent = qm.createProject("Test Project Parent", null, "1.0", null, grandParent, null, true, false);
-        Project child = qm.createProject("Test Project Child", null, "1.0", null, parent, null, true, false);
-        Project grandChild = qm.createProject("Test Project Grandchild", null, "1.0", null, child, null, true, false);
+        Project grandParent = qm.createProject("Test Project Grandparent", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project parent = qm.createProject("Test Project Parent", null, "1.0", null, grandParent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project child = qm.createProject("Test Project Child", null, "1.0", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project grandChild = qm.createProject("Test Project Grandchild", null, "1.0", null, child, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         projects.add(grandParent);
         rule.setProjects(projects);
         // Creates a new component
@@ -636,10 +636,10 @@ public class NotificationRouterTest extends PersistenceCapableTest {
         rule.setNotifyOn(notifyOn);
         // Creates a project which will later be matched on
         List<Project> projects = new ArrayList<>();
-        Project grandParent = qm.createProject("Test Project Grandparent", null, "1.0", null, null, null, true, false);
-        Project parent = qm.createProject("Test Project Parent", null, "1.0", null, grandParent, null, true, false);
-        Project child = qm.createProject("Test Project Child", null, "1.0", null, parent, null, true, false);
-        Project grandChild = qm.createProject("Test Project Grandchild", null, "1.0", null, child, null, true, false);
+        Project grandParent = qm.createProject("Test Project Grandparent", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project parent = qm.createProject("Test Project Parent", null, "1.0", null, grandParent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project child = qm.createProject("Test Project Child", null, "1.0", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project grandChild = qm.createProject("Test Project Grandchild", null, "1.0", null, child, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         projects.add(grandParent);
         rule.setProjects(projects);
         // Creates a new component
@@ -672,10 +672,10 @@ public class NotificationRouterTest extends PersistenceCapableTest {
         rule.setNotifyOn(notifyOn);
         // Creates a project which will later be matched on
         List<Project> projects = new ArrayList<>();
-        Project grandParent = qm.createProject("Test Project Grandparent", null, "1.0", null, null, null, true, false);
-        Project parent = qm.createProject("Test Project Parent", null, "1.0", null, grandParent, null, true, false);
-        Project child = qm.createProject("Test Project Child", null, "1.0", null, parent, null, true, false);
-        Project grandChild = qm.createProject("Test Project Grandchild", null, "1.0", null, child, null, false, false);
+        Project grandParent = qm.createProject("Test Project Grandparent", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project parent = qm.createProject("Test Project Parent", null, "1.0", null, grandParent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project child = qm.createProject("Test Project Child", null, "1.0", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project grandChild = qm.createProject("Test Project Grandchild", null, "1.0", null, child, null, Project.EnhancedStatus.ARCHIVED, false);
         projects.add(grandParent);
         rule.setProjects(projects);
         // Creates a new component

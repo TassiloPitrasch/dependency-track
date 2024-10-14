@@ -36,6 +36,7 @@ import org.dependencytrack.persistence.QueryManager;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -174,18 +175,22 @@ public class PortfolioMetricsUpdateTask implements Subscriber {
 
     private List<Project> fetchNextActiveProjectsBatch(final PersistenceManager pm, final Long lastId) {
         final Query<Project> query = pm.newQuery(Project.class);
+        var params = new HashMap<String, Object>();
+        params.put("archived", Project.EnhancedStatus.ARCHIVED);
+
         // exclude collection projects since their numbers are included in other projects and would wrongly influence portfolio metrics.
         if (lastId == null) {
-            query.setFilter("active && (collectionLogic == null || collectionLogic == 'NONE')");
+            query.setFilter("enhancedStatus != :archived && (collectionLogic == null || collectionLogic == 'NONE')");
         } else {
+            params.put("lastId", lastId);
             query.setFilter("""
-                    active \
+                    enhancedStatus != :archived \
                     && (collectionLogic == null || collectionLogic == 'NONE') \
-                    && id < :lastId""");
-            query.setParameters(lastId);
+                    && id < :lastId """);
         }
         query.setOrdering("id DESC");
         query.range(0, BATCH_SIZE);
+        query.setNamedParameters(params);
 
         // NB: Set fetch group on PM level to avoid fields of the default fetch group from being loaded.
         try (var ignoredPersistenceCustomization = new ScopedCustomization(pm)
@@ -195,5 +200,4 @@ public class PortfolioMetricsUpdateTask implements Subscriber {
             query.closeAll();
         }
     }
-
 }

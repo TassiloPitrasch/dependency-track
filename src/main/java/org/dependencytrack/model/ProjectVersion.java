@@ -23,8 +23,8 @@ import java.io.Serializable;
 import java.util.UUID;
 
 /**
- * Value object holding UUID and version for a project
+ * Value object holding UUID, version and enhancedStatus for a project
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ProjectVersion(UUID uuid, String version, boolean active) implements Serializable {
+public record ProjectVersion(UUID uuid, String version, Project.EnhancedStatus enhancedStatus) implements Serializable {
 }

@@ -33,7 +33,7 @@ public class ProjectQueryManagerTest extends PersistenceCapableTest {
 
     @Test
     public void testCloneProjectPreservesVulnerabilityAttributionDate() throws Exception {
-        Project project = qm.createProject("Example Project 1", "Description 1", "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Example Project 1", "Description 1", "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component comp = new Component();
         comp.setId(111L);
         comp.setName("name");

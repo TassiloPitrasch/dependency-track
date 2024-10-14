@@ -368,8 +368,27 @@ public class QueryManager extends AlpineQueryManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //// BEGIN WRAPPER METHODS                                                                                      ////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Helper method to generate a default enhancedStatusList
+    public static List<Project.EnhancedStatus> getEnhancedStatusList(final boolean excludeInactive) {
+        List<Project.EnhancedStatus> enhancedStatusList = new ArrayList<>() {
+            {
+                add(Project.EnhancedStatus.IN_DEVELOPMENT);
+                add(Project.EnhancedStatus.IN_PRODUCTION);
+            }
+        };
+        if (excludeInactive) {
+            return enhancedStatusList;
+        }
+        enhancedStatusList.add(Project.EnhancedStatus.ARCHIVED);
+        return enhancedStatusList;
+    }
+
     public PaginatedResult getProjects(final boolean includeMetrics, final boolean excludeInactive, final boolean onlyRoot, final Team notAssignedToTeam) {
-        return getProjectQueryManager().getProjects(includeMetrics, excludeInactive, onlyRoot, notAssignedToTeam);
+        return getProjectQueryManager().getProjects(includeMetrics, getEnhancedStatusList(excludeInactive), onlyRoot, notAssignedToTeam);
+    }
+
+    public PaginatedResult getProjects(final boolean includeMetrics, final List<Project.EnhancedStatus> enhancedStatusList, final boolean onlyRoot, final Team notAssignedToTeam) {
+        return getProjectQueryManager().getProjects(includeMetrics, enhancedStatusList, onlyRoot, notAssignedToTeam);
     }
 
     public PaginatedResult getProjects(final boolean includeMetrics) {
@@ -384,12 +403,16 @@ public class QueryManager extends AlpineQueryManager {
         return getProjectQueryManager().getAllProjects();
     }
 
-    public List<Project> getAllProjects(boolean excludeInactive) {
-        return getProjectQueryManager().getAllProjects(excludeInactive);
+    public List<Project> getAllProjects(boolean excludeArchived) {
+        return getProjectQueryManager().getAllProjects(excludeArchived);
     }
 
     public PaginatedResult getProjects(final String name, final boolean excludeInactive, final boolean onlyRoot, final Team notAssignedToTeam) {
-        return getProjectQueryManager().getProjects(name, excludeInactive, onlyRoot, notAssignedToTeam);
+        return getProjectQueryManager().getProjects(name, getEnhancedStatusList(excludeInactive), onlyRoot, notAssignedToTeam);
+    }
+
+    public PaginatedResult getProjects(final String name, final List<Project.EnhancedStatus> enhancedStatusList, final boolean onlyRoot, final Team notAssignedToTeam) {
+        return getProjectQueryManager().getProjects(name, enhancedStatusList, onlyRoot, notAssignedToTeam);
     }
 
     public Project getProject(final String uuid) {
@@ -405,15 +428,27 @@ public class QueryManager extends AlpineQueryManager {
     }
 
     public PaginatedResult getProjects(final Team team, final boolean excludeInactive, final boolean bypass, final boolean onlyRoot) {
-        return getProjectQueryManager().getProjects(team, excludeInactive, bypass, onlyRoot);
+        return getProjectQueryManager().getProjects(team, getEnhancedStatusList(excludeInactive), bypass, onlyRoot);
+    }
+
+    public PaginatedResult getProjects(final Team team, final List<Project.EnhancedStatus> enhancedStatusList, final boolean bypass, final boolean onlyRoot) {
+        return getProjectQueryManager().getProjects(team, enhancedStatusList, bypass, onlyRoot);
     }
 
     public PaginatedResult getProjectsWithoutDescendantsOf(final boolean excludeInactive, final Project project) {
-        return getProjectQueryManager().getProjectsWithoutDescendantsOf(excludeInactive, project);
+        return getProjectQueryManager().getProjectsWithoutDescendantsOf(getEnhancedStatusList(excludeInactive), project);
     }
 
-    public PaginatedResult getProjectsWithoutDescendantsOf(final String name, final boolean excludeInactive, final Project project) {
-        return getProjectQueryManager().getProjectsWithoutDescendantsOf(name, excludeInactive, project);
+    public PaginatedResult getProjectsWithoutDescendantsOf(final List<Project.EnhancedStatus> enhancedStatusList, final Project project) {
+        return getProjectQueryManager().getProjectsWithoutDescendantsOf(enhancedStatusList, project);
+    }
+
+    public PaginatedResult getProjectsWithoutDescendantsOf(final String name, boolean excludeInactive, final Project project) {
+        return getProjectQueryManager().getProjectsWithoutDescendantsOf(name, getEnhancedStatusList(excludeInactive), project);
+    }
+
+    public PaginatedResult getProjectsWithoutDescendantsOf(final String name, final List<Project.EnhancedStatus> enhancedStatusList, final Project project) {
+        return getProjectQueryManager().getProjectsWithoutDescendantsOf(name, enhancedStatusList, project);
     }
 
     public boolean hasAccess(final Principal principal, final Project project) {
@@ -425,23 +460,43 @@ public class QueryManager extends AlpineQueryManager {
     }
 
     public PaginatedResult getProjects(final Tag tag, final boolean includeMetrics, final boolean excludeInactive, final boolean onlyRoot) {
-        return getProjectQueryManager().getProjects(tag, includeMetrics, excludeInactive, onlyRoot);
+        return getProjectQueryManager().getProjects(tag, includeMetrics, getEnhancedStatusList(excludeInactive), onlyRoot);
+    }
+
+    public PaginatedResult getProjects(final Tag tag, final boolean includeMetrics, final List<Project.EnhancedStatus> enhancedStatusList, final boolean onlyRoot) {
+        return getProjectQueryManager().getProjects(tag, includeMetrics, enhancedStatusList, onlyRoot);
     }
 
     public PaginatedResult getProjects(final Classifier classifier, final boolean includeMetrics, final boolean excludeInactive, final boolean onlyRoot) {
-        return getProjectQueryManager().getProjects(classifier, includeMetrics, excludeInactive, onlyRoot);
+        return getProjectQueryManager().getProjects(classifier, includeMetrics, getEnhancedStatusList(excludeInactive), onlyRoot);
+    }
+
+    public PaginatedResult getProjects(final Classifier classifier, final boolean includeMetrics, final List<Project.EnhancedStatus> enhancedStatusList, final boolean onlyRoot) {
+        return getProjectQueryManager().getProjects(classifier, includeMetrics, enhancedStatusList, onlyRoot);
     }
 
     public PaginatedResult getChildrenProjects(final UUID uuid, final boolean includeMetrics, final boolean excludeInactive) {
-        return getProjectQueryManager().getChildrenProjects(uuid, includeMetrics, excludeInactive);
+        return getProjectQueryManager().getChildrenProjects(uuid, includeMetrics, getEnhancedStatusList(excludeInactive));
+    }
+
+    public PaginatedResult getChildrenProjects(final UUID uuid, final boolean includeMetrics, final List<Project.EnhancedStatus> enhancedStatusList) {
+        return getProjectQueryManager().getChildrenProjects(uuid, includeMetrics, enhancedStatusList);
     }
 
     public PaginatedResult getChildrenProjects(final Tag tag, final UUID uuid, final boolean includeMetrics, final boolean excludeInactive) {
-        return getProjectQueryManager().getChildrenProjects(tag, uuid, includeMetrics, excludeInactive);
+        return getProjectQueryManager().getChildrenProjects(tag, uuid, includeMetrics, getEnhancedStatusList(excludeInactive));
+    }
+
+    public PaginatedResult getChildrenProjects(final Tag tag, final UUID uuid, final boolean includeMetrics, final List<Project.EnhancedStatus> enhancedStatusList) {
+        return getProjectQueryManager().getChildrenProjects(tag, uuid, includeMetrics, enhancedStatusList);
     }
 
     public PaginatedResult getChildrenProjects(final Classifier classifier, final UUID uuid, final boolean includeMetrics, final boolean excludeInactive) {
-        return getProjectQueryManager().getChildrenProjects(classifier, uuid, includeMetrics, excludeInactive);
+        return getProjectQueryManager().getChildrenProjects(classifier, uuid, includeMetrics, getEnhancedStatusList(excludeInactive));
+    }
+
+    public PaginatedResult getChildrenProjects(final Classifier classifier, final UUID uuid, final boolean includeMetrics, final List<Project.EnhancedStatus> enhancedStatusList) {
+        return getProjectQueryManager().getChildrenProjects(classifier, uuid, includeMetrics, enhancedStatusList);
     }
 
     public PaginatedResult getProjects(final Tag tag) {
@@ -469,11 +524,18 @@ public class QueryManager extends AlpineQueryManager {
     }
 
     public Project createProject(String name, String description, String version, List<Tag> tags, Project parent, PackageURL purl, boolean active, boolean commitIndex) {
-        return getProjectQueryManager().createProject(name, description, version, tags, parent, purl, active, commitIndex);
+        if (active) {
+            return getProjectQueryManager().createProject(name, description, version, tags, parent, purl, Project.EnhancedStatus.IN_DEVELOPMENT, commitIndex);
+        }
+        return getProjectQueryManager().createProject(name, description, version, tags, parent, purl, Project.EnhancedStatus.ARCHIVED, commitIndex);
+    }
+
+    public Project createProject(String name, String description, String version, List<Tag> tags, Project parent, PackageURL purl, Project.EnhancedStatus enhancedStatus, boolean commitIndex) {
+        return getProjectQueryManager().createProject(name, description, version, tags, parent, purl, enhancedStatus, commitIndex);
     }
     public Project createProject(String name, String description, String version, List<Tag> tags, Project parent,
-                                 PackageURL purl, boolean active, boolean isLatest, boolean commitIndex) {
-        return getProjectQueryManager().createProject(name, description, version, tags, parent, purl, active, isLatest, commitIndex);
+                                 PackageURL purl, Project.EnhancedStatus enhancedStatus, boolean isLatest, boolean commitIndex) {
+        return getProjectQueryManager().createProject(name, description, version, tags, parent, purl, enhancedStatus, isLatest, commitIndex);
     }
 
     public Project createProject(final Project project, List<Tag> tags, boolean commitIndex) {
@@ -1141,12 +1203,12 @@ public class QueryManager extends AlpineQueryManager {
         return getFindingsQueryManager().getFindings(project, includeSuppressed);
     }
 
-    public PaginatedResult getAllFindings(final Map<String, String> filters, final boolean showSuppressed, final boolean showInactive) {
-        return getFindingsSearchQueryManager().getAllFindings(filters, showSuppressed, showInactive);
+    public PaginatedResult getAllFindings(final Map<String, String> filters, final boolean showSuppressed, final List<Project.EnhancedStatus> enhancedStatusList) {
+        return getFindingsSearchQueryManager().getAllFindings(filters, showSuppressed, enhancedStatusList);
     }
 
-    public PaginatedResult getAllFindingsGroupedByVulnerability(final Map<String, String> filters, final boolean showInactive) {
-        return getFindingsSearchQueryManager().getAllFindingsGroupedByVulnerability(filters, showInactive);
+    public PaginatedResult getAllFindingsGroupedByVulnerability(final Map<String, String> filters, final List<Project.EnhancedStatus> enhancedStatusList) {
+        return getFindingsSearchQueryManager().getAllFindingsGroupedByVulnerability(filters, enhancedStatusList);
     }
 
     public List<VulnerabilityMetrics> getVulnerabilityMetrics() {
