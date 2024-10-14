@@ -27,6 +27,7 @@ import org.dependencytrack.model.Analysis;
 import org.dependencytrack.model.Component;
 import org.dependencytrack.model.Finding;
 import org.dependencytrack.model.GroupedFinding;
+import org.dependencytrack.model.Project;
 import org.dependencytrack.model.RepositoryMetaComponent;
 import org.dependencytrack.model.RepositoryType;
 import org.dependencytrack.model.Vulnerability;
@@ -38,10 +39,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 public class FindingsSearchQueryManager extends QueryManager implements IQueryManager {
-
     private static final Map<String, String> sortingAttributes = Map.ofEntries(
             Map.entry("vulnerability.vulnId", "\"VULNERABILITY\".\"VULNID\""),
             Map.entry("vulnerability.title", "\"VULNERABILITY\".\"TITLE\""),
@@ -57,7 +58,7 @@ public class FindingsSearchQueryManager extends QueryManager implements IQueryMa
                          WHEN "VULNERABILITY"."SEVERITY" = 'CRITICAL'
                          THEN 10
                          ELSE CASE WHEN "VULNERABILITY"."CVSSV3BASESCORE" IS NOT NULL
-                                   THEN "VULNERABILITY"."CVSSV3BASESCORE"
+                                   THEN "VULNERABILITY">."CVSSV3BASESCORE"
                                    ELSE "VULNERABILITY"."CVSSV2BASESCORE"
                               END
                     END
@@ -67,6 +68,7 @@ public class FindingsSearchQueryManager extends QueryManager implements IQueryMa
             Map.entry("vulnerability.cvssV2BaseScore", "\"VULNERABILITY\".\"CVSSV2BASESCORE\""),
             Map.entry("vulnerability.cvssV3BaseScore", "\"VULNERABILITY\".\"CVSSV3BASESCORE\""),
             Map.entry("component.projectName", "concat(\"PROJECT\".\"NAME\", ' ', \"PROJECT\".\"VERSION\")"),
+            Map.entry("component.projectEnhancedStatus", "\"PROJECT\".\"ENHANCED_STATUS\""),
             Map.entry("component.name", "\"COMPONENT\".\"NAME\""),
             Map.entry("component.version", "\"COMPONENT\".\"VERSION\""),
             Map.entry("analysis.state", "\"ANALYSIS\".\"STATE\""),
@@ -96,23 +98,24 @@ public class FindingsSearchQueryManager extends QueryManager implements IQueryMa
      * Returns a List of all Finding objects filtered by ACL and other optional filters.
      * @param filters        determines the filters to apply on the list of Finding objects
      * @param showSuppressed determines if suppressed vulnerabilities should be included or not
-     * @param showInactive   determines if inactive projects should be included or not
+     * @param enhancedStatusList filters by Project Status
      * @return a List of Finding objects
      */
-    public PaginatedResult getAllFindings(final Map<String, String> filters, final boolean showSuppressed, final boolean showInactive) {
+    public PaginatedResult getAllFindings(final Map<String, String> filters, final boolean showSuppressed, final List<Project.EnhancedStatus> enhancedStatusList) {
         StringBuilder queryFilter = new StringBuilder();
         Map<String, Object> params = new HashMap<>();
-        if (!showInactive) {
-            queryFilter.append(" WHERE (\"PROJECT\".\"ACTIVE\" = :active OR \"PROJECT\".\"ACTIVE\" IS NULL)");
-            params.put("active", true);
+
+        StringJoiner statusFilterJoiner = new StringJoiner(" OR ");
+        statusFilterJoiner.add("\"PROJECT\".\"ENHANCED_STATUS\" IS NULL");
+        for (Project.EnhancedStatus enhancedStatus : enhancedStatusList) {
+            String param_name = enhancedStatus.toString().replace("_", "");
+            params.put(param_name, enhancedStatus.toString());
+            statusFilterJoiner.add(String.format("\"PROJECT\".\"ENHANCED_STATUS\" = :%s", param_name));
         }
+        queryFilter.append(String.format(" WHERE (%s)", statusFilterJoiner));
+
         if (!showSuppressed) {
-            if (queryFilter.isEmpty()) {
-                queryFilter.append(" WHERE ");
-            } else {
-                queryFilter.append(" AND ");
-            }
-            queryFilter.append("(\"ANALYSIS\".\"SUPPRESSED\" = :showSuppressed OR \"ANALYSIS\".\"SUPPRESSED\" IS NULL)");
+            queryFilter.append(" AND (\"ANALYSIS\".\"SUPPRESSED\" = :showSuppressed OR \"ANALYSIS\".\"SUPPRESSED\" IS NULL)");
             params.put("showSuppressed", false);
         }
         processFilters(filters, queryFilter, params, false);
@@ -154,16 +157,22 @@ public class FindingsSearchQueryManager extends QueryManager implements IQueryMa
     /**
      * Returns a List of all Finding objects filtered by ACL and other optional filters. The resulting list is grouped by vulnerability.
      * @param filters      determines the filters to apply on the list of Finding objects
-     * @param showInactive determines if inactive projects should be included or not
+     * @param enhancedStatusList filters by Project Status
      * @return a List of Finding objects
      */
-    public PaginatedResult getAllFindingsGroupedByVulnerability(final Map<String, String> filters, final boolean showInactive) {
+    public PaginatedResult getAllFindingsGroupedByVulnerability(final Map<String, String> filters, final List<Project.EnhancedStatus> enhancedStatusList) {
         StringBuilder queryFilter = new StringBuilder();
         Map<String, Object> params = new HashMap<>();
-        if (!showInactive) {
-            queryFilter.append(" WHERE (\"PROJECT\".\"ACTIVE\" = :active OR \"PROJECT\".\"ACTIVE\" IS NULL)");
-            params.put("active", true);
+
+        StringJoiner statusFilterJoiner = new StringJoiner(" OR ");
+        statusFilterJoiner.add("\"PROJECT\".\"ENHANCED_STATUS\" IS NULL");
+        for (Project.EnhancedStatus enhancedStatus : enhancedStatusList) {
+            String param_name = enhancedStatus.toString().replace("_", "");
+            params.put(param_name, enhancedStatus.toString());
+            statusFilterJoiner.add(String.format("\"PROJECT\".\"ENHANCED_STATUS\" = :%s", param_name));
         }
+        queryFilter.append(String.format(" WHERE (%s)", statusFilterJoiner));
+
         processFilters(filters, queryFilter, params, true);
         final Query<Object[]> query = pm.newQuery(Query.SQL, GroupedFinding.QUERY + queryFilter + (this.orderBy != null ? " ORDER BY " + sortingAttributes.get(this.orderBy) + " " + (this.orderDirection == OrderDirection.DESCENDING ? " DESC" : "ASC") : ""));
         PaginatedResult result = new PaginatedResult();

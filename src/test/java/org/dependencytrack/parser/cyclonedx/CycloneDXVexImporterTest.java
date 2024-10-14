@@ -4,12 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.cyclonedx.exception.ParseException;
 import org.cyclonedx.parsers.BomParserFactory;
 import org.dependencytrack.PersistenceCapableTest;
-import org.dependencytrack.model.Analysis;
-import org.dependencytrack.model.AnalysisJustification;
-import org.dependencytrack.model.AnalysisState;
-import org.dependencytrack.model.Component;
-import org.dependencytrack.model.Severity;
-import org.dependencytrack.model.Vulnerability;
+import org.dependencytrack.model.*;
 import org.dependencytrack.tasks.scanners.AnalyzerIdentity;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,7 +27,7 @@ public class CycloneDXVexImporterTest extends PersistenceCapableTest {
     public void shouldAuditVulnerabilityFromAllSourcesUsingVex() throws URISyntaxException, IOException, ParseException {
         // Arrange
         var sources = Arrays.asList(Vulnerability.Source.values());
-        var project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        var project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         var component = new Component();
         component.setProject(project);
