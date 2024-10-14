@@ -103,7 +103,7 @@ public class PolicyEngineTest extends PersistenceCapableTest {
         qm.createPolicyCondition(policy, Subject.SEVERITY, PolicyCondition.Operator.IS, Severity.CRITICAL.name());
         Tag commonTag = qm.createTag("Tag 1");
         qm.bind(policy, List.of(commonTag));
-        Project project = qm.createProject("My Project", null, "1", List.of(commonTag), null, null, true, false);
+        Project project = qm.createProject("My Project", null, "1", List.of(commonTag), null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setName("Test Component");
         component.setVersion("1.0");
@@ -126,7 +126,7 @@ public class PolicyEngineTest extends PersistenceCapableTest {
         Policy policy = qm.createPolicy("Test Policy", Operator.ANY, ViolationState.INFO);
         qm.createPolicyCondition(policy, Subject.SEVERITY, PolicyCondition.Operator.IS, Severity.CRITICAL.name());
         qm.bind(policy, List.of(qm.createTag("Tag 1")));
-        Project project = qm.createProject("My Project", null, "1", List.of(qm.createTag("Tag 2")), null, null, true, false);
+        Project project = qm.createProject("My Project", null, "1", List.of(qm.createTag("Tag 2")), null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setName("Test Component");
         component.setVersion("1.0");
@@ -149,9 +149,9 @@ public class PolicyEngineTest extends PersistenceCapableTest {
         Policy policy = qm.createPolicy("Test Policy", Operator.ANY, ViolationState.INFO);
         qm.createPolicyCondition(policy, Subject.SEVERITY, PolicyCondition.Operator.IS, Severity.CRITICAL.name());
         policy.setIncludeChildren(true);
-        Project parent = qm.createProject("Parent", null, "1", null, null, null, true, false);
-        Project child = qm.createProject("Child", null, "2", null, parent, null, true, false);
-        Project grandchild = qm.createProject("Grandchild", null, "3", null, child, null, true, false);
+        Project parent = qm.createProject("Parent", null, "1", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project child = qm.createProject("Child", null, "2", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project grandchild = qm.createProject("Grandchild", null, "3", null, child, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         policy.setProjects(List.of(parent));
         Component component = new Component();
         component.setName("Test Component");
@@ -176,9 +176,9 @@ public class PolicyEngineTest extends PersistenceCapableTest {
     public void noPolicyAssignedToParentProject() {
         Policy policy = qm.createPolicy("Test Policy", Operator.ANY, ViolationState.INFO);
         qm.createPolicyCondition(policy, Subject.SEVERITY, PolicyCondition.Operator.IS, Severity.CRITICAL.name());
-        Project parent = qm.createProject("Parent", null, "1", null, null, null, true, false);
-        Project child = qm.createProject("Child", null, "2", null, parent, null, true, false);
-        Project grandchild = qm.createProject("Grandchild", null, "3", null, child, null, true, false);
+        Project parent = qm.createProject("Parent", null, "1", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project child = qm.createProject("Child", null, "2", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project grandchild = qm.createProject("Grandchild", null, "3", null, child, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         policy.setProjects(List.of(parent));
         Component component = new Component();
         component.setName("Test Component");
@@ -204,7 +204,7 @@ public class PolicyEngineTest extends PersistenceCapableTest {
         Policy policy = qm.createPolicy("Test Policy", Operator.ANY, ViolationState.INFO, true);
         qm.createPolicyCondition(policy, Subject.SEVERITY, PolicyCondition.Operator.IS, Severity.CRITICAL.name());
         Project project = qm.createProject("My Project", null, "1", null, null,
-                null, true, true, false);
+                null, Project.EnhancedStatus.IN_DEVELOPMENT, true, false);
         Component component = new Component();
         component.setName("Test Component");
         component.setVersion("1.0");
@@ -227,7 +227,7 @@ public class PolicyEngineTest extends PersistenceCapableTest {
         Policy policy = qm.createPolicy("Test Policy", Operator.ANY, ViolationState.INFO, true);
         qm.createPolicyCondition(policy, Subject.SEVERITY, PolicyCondition.Operator.IS, Severity.CRITICAL.name());
         Project project = qm.createProject("My Project", null, "1", null, null,
-                null, true, false, false);
+                null, Project.EnhancedStatus.IN_DEVELOPMENT, false, false);
         Component component = new Component();
         component.setName("Test Component");
         component.setVersion("1.0");
@@ -258,7 +258,7 @@ public class PolicyEngineTest extends PersistenceCapableTest {
         Policy policy = qm.createPolicy("Policy 1924", Operator.ALL, ViolationState.INFO);
         qm.createPolicyCondition(policy, Subject.SEVERITY, PolicyCondition.Operator.IS, Severity.CRITICAL.name());
         qm.createPolicyCondition(policy, Subject.PACKAGE_URL, PolicyCondition.Operator.NO_MATCH, "pkg:deb");
-        Project project = qm.createProject("My Project", null, "1", null, null, null, true, false);
+        Project project = qm.createProject("My Project", null, "1", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         qm.persist(project);
         ArrayList<Component> components = new ArrayList<>();
         Component component = new Component();
@@ -341,7 +341,7 @@ public class PolicyEngineTest extends PersistenceCapableTest {
         license = qm.detach(License.class, license.getId());
         qm.createPolicyCondition(policy, Subject.LICENSE_GROUP, PolicyCondition.Operator.IS_NOT, lg.getUuid().toString());
 
-        Project project = qm.createProject("My Project", null, "1", null, null, null, true, false);
+        Project project = qm.createProject("My Project", null, "1", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         qm.persist(project);
 
         license = new License();

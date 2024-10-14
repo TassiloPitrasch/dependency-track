@@ -1346,8 +1346,8 @@ public class TagResourceTest extends ResourceTest {
         for (int i = 1; i < 5; i++) {
             qm.createTag("Tag " + i);
         }
-        qm.createProject("Project A", null, "1", List.of(qm.getTagByName("Tag 1"), qm.getTagByName("Tag 2")), null, null, true, false);
-        qm.createProject("Project B", null, "1", List.of(qm.getTagByName("Tag 2"), qm.getTagByName("Tag 3"), qm.getTagByName("Tag 4")), null, null, true, false);
+        qm.createProject("Project A", null, "1", List.of(qm.getTagByName("Tag 1"), qm.getTagByName("Tag 2")), null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("Project B", null, "1", List.of(qm.getTagByName("Tag 2"), qm.getTagByName("Tag 3"), qm.getTagByName("Tag 4")), null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Policy policy = qm.createPolicy("Test Policy", Policy.Operator.ANY, Policy.ViolationState.INFO);
 
         Response response = jersey.target(V1_TAG + "/policy/" + policy.getUuid())
@@ -1370,9 +1370,9 @@ public class TagResourceTest extends ResourceTest {
         for (int i = 1; i < 5; i++) {
             qm.createTag("Tag " + i);
         }
-        qm.createProject("Project A", null, "1", List.of(qm.getTagByName("Tag 1"), qm.getTagByName("Tag 2")), null, null, true, false);
-        qm.createProject("Project B", null, "1", List.of(qm.getTagByName("Tag 1"), qm.getTagByName("Tag 3")), null, null, true, false);
-        qm.createProject("Project C", null, "1", List.of(qm.getTagByName("Tag 1"), qm.getTagByName("Tag 4")), null, null, true, false);
+        qm.createProject("Project A", null, "1", List.of(qm.getTagByName("Tag 1"), qm.getTagByName("Tag 2")), null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("Project B", null, "1", List.of(qm.getTagByName("Tag 1"), qm.getTagByName("Tag 3")), null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("Project C", null, "1", List.of(qm.getTagByName("Tag 1"), qm.getTagByName("Tag 4")), null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         Policy policy = qm.createPolicy("Test Policy", Policy.Operator.ANY, Policy.ViolationState.INFO);
         policy.setProjects(List.of(qm.getProject("Project A", "1"), qm.getProject("Project C", "1")));

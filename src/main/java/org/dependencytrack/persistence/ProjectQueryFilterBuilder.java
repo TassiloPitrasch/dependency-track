@@ -20,6 +20,7 @@ package org.dependencytrack.persistence;
 
 import alpine.model.Team;
 import org.dependencytrack.model.Classifier;
+import org.dependencytrack.model.Project;
 import org.dependencytrack.model.Tag;
 
 import java.util.ArrayList;
@@ -35,7 +36,6 @@ import java.util.UUID;
  * Mutable and not threadsafe!
  */
 class ProjectQueryFilterBuilder {
-
     private final Map<String, Object> params;
     private final List<String> filterCriteria;
 
@@ -44,10 +44,11 @@ class ProjectQueryFilterBuilder {
         this.filterCriteria = new ArrayList<>();
     }
 
-    ProjectQueryFilterBuilder excludeInactive(boolean excludeInactive) {
-        if (excludeInactive) {
-            filterCriteria.add("active");
-        }
+    ProjectQueryFilterBuilder enhancedStatus(List<Project.EnhancedStatus> enhancedStatusList) {
+        params.put("enhancedStatusList", enhancedStatusList);
+        // Returning the projects with empty enhancedStatus as well
+        // There shouldn't be any of them, but if, they're displayed here
+        filterCriteria.add("(enhancedStatus == null || :enhancedStatusList.contains(enhancedStatus))");
         return this;
     }
 

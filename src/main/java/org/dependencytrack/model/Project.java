@@ -84,6 +84,7 @@ import java.util.UUID;
                 @Persistent(name = "group"),
                 @Persistent(name = "name"),
                 @Persistent(name = "description"),
+                @Persistent(name = "enhancedStatus"),
                 @Persistent(name = "version"),
                 @Persistent(name = "classifier"),
                 @Persistent(name = "cpe"),
@@ -132,6 +133,15 @@ public class Project implements Serializable {
         METRICS_UPDATE,
         PARENT,
         PORTFOLIO_METRICS_UPDATE
+    }
+
+    /**
+     * Defines an Enum of possible lifecycle phases for a project.
+     */
+    public enum EnhancedStatus {
+        IN_DEVELOPMENT,
+        IN_PRODUCTION,
+        ARCHIVED
     }
 
     @PrimaryKey
@@ -285,9 +295,10 @@ public class Project implements Serializable {
     private Double lastInheritedRiskScore;
 
     @Persistent
-    @Column(name = "ACTIVE", defaultValue = "true")
-    @JsonSerialize(nullsUsing = BooleanDefaultTrueSerializer.class)
-    private boolean active = true;
+    @Column(name = "ENHANCED_STATUS", jdbcType = "VARCHAR")
+    @Index(name = "PROJECT_ENHANCED_STATUS_IDX")
+    @Extension(vendorName = "datanucleus", key = "enum-check-constraint", value = "true")
+    private EnhancedStatus enhancedStatus;
 
     @Persistent
     @Index(name = "PROJECT_IS_LATEST_IDX")
@@ -549,12 +560,15 @@ public class Project implements Serializable {
         this.externalReferences = externalReferences;
     }
 
-    public boolean isActive() {
-        return active;
+    public EnhancedStatus getEnhancedStatus() {
+        return enhancedStatus;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setEnhancedStatus(EnhancedStatus enhancedStatus) { this.enhancedStatus = enhancedStatus; }
+
+    public boolean isArchived() {
+        // enhancedStatus might be null; in that case, false is returned
+        return Project.EnhancedStatus.ARCHIVED.equals(enhancedStatus);
     }
 
     @JsonProperty("isLatest")

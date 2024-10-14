@@ -108,7 +108,7 @@ public class ViolationAnalysisResourceTest extends ResourceTest {
     public void retrieveAnalysisTest() {
         initializeWithPermissions(Permissions.VIEW_POLICY_VIOLATION);
 
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         var component = new Component();
         component.setProject(project);
@@ -183,7 +183,7 @@ public class ViolationAnalysisResourceTest extends ResourceTest {
     public void retrieveAnalysisViolationNotFoundTest() {
         initializeWithPermissions(Permissions.VIEW_POLICY_VIOLATION);
 
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         var component = new Component();
         component.setProject(project);
@@ -206,7 +206,7 @@ public class ViolationAnalysisResourceTest extends ResourceTest {
     public void updateAnalysisCreateNewTest() throws Exception {
         initializeWithPermissions(Permissions.POLICY_VIOLATION_ANALYSIS);
 
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         var component = new Component();
         component.setProject(project);
@@ -263,7 +263,7 @@ public class ViolationAnalysisResourceTest extends ResourceTest {
     public void updateAnalysisCreateNewWithEmptyRequestTest() throws Exception {
         initializeWithPermissions(Permissions.POLICY_VIOLATION_ANALYSIS);
 
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         var component = new Component();
         component.setProject(project);
@@ -313,7 +313,7 @@ public class ViolationAnalysisResourceTest extends ResourceTest {
     public void updateAnalysisUpdateExistingTest() throws Exception {
         initializeWithPermissions(Permissions.POLICY_VIOLATION_ANALYSIS);
 
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         var component = new Component();
         component.setProject(project);
@@ -381,7 +381,7 @@ public class ViolationAnalysisResourceTest extends ResourceTest {
     public void updateAnalysisUpdateExistingNoChangesTest() throws Exception{
         initializeWithPermissions(Permissions.POLICY_VIOLATION_ANALYSIS);
 
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         var component = new Component();
         component.setProject(project);
@@ -429,7 +429,7 @@ public class ViolationAnalysisResourceTest extends ResourceTest {
     public void updateAnalysisUpdateExistingWithEmptyRequestTest() throws Exception {
         initializeWithPermissions(Permissions.POLICY_VIOLATION_ANALYSIS);
 
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         var component = new Component();
         component.setProject(project);
@@ -518,7 +518,7 @@ public class ViolationAnalysisResourceTest extends ResourceTest {
     public void updateAnalysisViolationNotFoundTest() {
         initializeWithPermissions(Permissions.POLICY_VIOLATION_ANALYSIS);
 
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         var component = new Component();
         component.setProject(project);

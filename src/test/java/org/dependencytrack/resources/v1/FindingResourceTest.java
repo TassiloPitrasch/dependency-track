@@ -63,8 +63,8 @@ public class FindingResourceTest extends ResourceTest {
 
     @Test
     public void getFindingsByProjectTest() {
-        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
-        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component c1 = createComponent(p1, "Component A", "1.0");
         Component c2 = createComponent(p1, "Component B", "1.0");
         Component c3 = createComponent(p1, "Component C", "1.0");
@@ -155,8 +155,8 @@ public class FindingResourceTest extends ResourceTest {
 
     @Test
     public void exportFindingsByProjectTest() {
-        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
-        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component c1 = createComponent(p1, "Component A", "1.0");
         Component c2 = createComponent(p1, "Component B", "1.0");
         Component c3 = createComponent(p1, "Component C", "1.0");
@@ -232,8 +232,8 @@ public class FindingResourceTest extends ResourceTest {
 
     @Test
     public void getFindingsByProjectWithComponentLatestVersionTest() {
-        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
-        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component c1 = createComponent(p1, "Component A", "1.0");
         c1.setPurl("pkg:/maven/org.acme/component-a@1.0.0");
         RepositoryMetaComponent r1 = new RepositoryMetaComponent();
@@ -324,7 +324,7 @@ public class FindingResourceTest extends ResourceTest {
 
     @Test
     public void getFindingsByProjectWithComponentLatestVersionWithoutRepositoryMetaComponent() {
-        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component c1 = createComponent(p1, "Component A", "1.0");
         c1.setPurl("pkg:/maven/org.acme/component-a@1.0.0");
 
@@ -353,9 +353,9 @@ public class FindingResourceTest extends ResourceTest {
 
     @Test
     public void getAllFindings() {
-        Project p1 = qm.createProject("Acme Example 1", null, "1.0", null, null, null, true, false);
-        Project p1_child = qm.createProject("Acme Example 2", null, "1.0", null, p1, null, true, false);
-        Project p2 = qm.createProject("Acme Example 3", null, "1.0", null, null, null, true, false);
+        Project p1 = qm.createProject("Acme Example 1", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project p1_child = qm.createProject("Acme Example 2", null, "1.0", null, p1, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project p2 = qm.createProject("Acme Example 3", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component c1 = createComponent(p1, "Component A", "1.0");
         Component c2 = createComponent(p1, "Component B", "1.0");
         Component c3 = createComponent(p1_child, "Component C", "1.0");
@@ -411,9 +411,9 @@ public class FindingResourceTest extends ResourceTest {
 
     @Test
     public void getAllFindingsWithAclEnabled() {
-        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
-        Project p1_child = qm.createProject("Acme Example", null, "1.0", null, p1, null, true, false);
-        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project p1_child = qm.createProject("Acme Example", null, "1.0", null, p1, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Team team = qm.createTeam("Team Acme", true);
         p1.addAccessTeam(team);
         Component c1 = createComponent(p1, "Component A", "1.0");
@@ -467,9 +467,9 @@ public class FindingResourceTest extends ResourceTest {
 
     @Test
     public void getAllFindingsGroupedByVulnerability() {
-        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
-        Project p1_child = qm.createProject("Acme Example", null, "1.0", null, p1, null, true, false);
-        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project p1_child = qm.createProject("Acme Example", null, "1.0", null, p1, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component c1 = createComponent(p1, "Component A", "1.0");
         Component c2 = createComponent(p1, "Component B", "1.0");
         Component c3 = createComponent(p1_child, "Component C", "1.0");
@@ -543,9 +543,9 @@ public class FindingResourceTest extends ResourceTest {
 
     @Test
     public void getAllFindingsGroupedByVulnerabilityWithAclEnabled() {
-        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
-        Project p1_child = qm.createProject("Acme Example", null, "1.0", null, p1, null, true, false);
-        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project p1 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project p1_child = qm.createProject("Acme Example", null, "1.0", null, p1, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project p2 = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Team team = qm.createTeam("Team Acme", true);
         p1.addAccessTeam(team);
         Component c1 = createComponent(p1, "Component A", "1.0");
@@ -618,7 +618,7 @@ public class FindingResourceTest extends ResourceTest {
 
     @Test
     public void getSARIFFindingsByProjectTest() {
-        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component c1 = createComponent(project, "Component 1", "1.1.4");
         Component c2 = createComponent(project, "Component 2", "2.78.123");
         c1.setGroup("org.acme");

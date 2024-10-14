@@ -18,6 +18,8 @@
  */
 package org.dependencytrack.resources.v1.vo;
 
+import org.dependencytrack.model.Project;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -38,16 +40,16 @@ public class AffectedProject {
 
     private final String version;
 
-    private final boolean active;
+    private final Project.EnhancedStatus enhancedStatus;
 
     private final List<UUID> affectedComponentUuids;
 
-    public AffectedProject(UUID uuid, boolean dependencyGraphAvailable, String name, String version, boolean active, List<UUID> affectedComponentUuids) {
+    public AffectedProject(UUID uuid, boolean dependencyGraphAvailable, String name, String version, Project.EnhancedStatus enhancedStatus, List<UUID> affectedComponentUuids) {
         this.uuid = uuid;
         this.dependencyGraphAvailable = dependencyGraphAvailable;
         this.name = name;
         this.version = version;
-        this.active = active;
+        this.enhancedStatus = enhancedStatus;
         this.affectedComponentUuids = affectedComponentUuids == null ? new ArrayList<>() : affectedComponentUuids;
     }
 
@@ -66,8 +68,8 @@ public class AffectedProject {
         return version;
     }
 
-    public boolean getActive() {
-        return active;
+    public Project.EnhancedStatus getEnhancedStatus() {
+        return this.enhancedStatus;
     }
 
     public List<UUID> getAffectedComponentUuids() {

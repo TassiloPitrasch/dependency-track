@@ -23,6 +23,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.dependencytrack.model.Component;
+import org.dependencytrack.model.Project;
 import org.dependencytrack.persistence.QueryManager;
 import org.dependencytrack.search.document.ComponentDocument;
 
@@ -114,7 +115,8 @@ public final class ComponentIndexer extends IndexManager implements ObjectIndexe
         final Query<Component> query = qm.getPersistenceManager().newQuery(Component.class);
         var filterParts = new ArrayList<String>();
         var params = new HashMap<String, Object>();
-        filterParts.add("project.active");
+        params.put("archived", Project.EnhancedStatus.ARCHIVED);
+        filterParts.add("(project.enhancedStatus != :archived)");
         if (lastId != null) {
             filterParts.add("id > :lastId");
             params.put("lastId", lastId);

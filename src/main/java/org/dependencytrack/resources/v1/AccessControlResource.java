@@ -91,14 +91,21 @@ public class AccessControlResource extends AlpineResource {
     @PermissionRequired(Permissions.Constants.ACCESS_MANAGEMENT)
     public Response retrieveProjects (@Parameter(description = "The UUID of the team to retrieve mappings for", schema = @Schema(type = "string", format = "uuid"), required = true)
                                       @PathParam("uuid") @ValidUuid String uuid,
-                                      @Parameter(description = "Optionally excludes inactive projects from being returned", required = false)
+                                      @Parameter(description = "Filters by Project Status")
+                                      @QueryParam(value = "enhancedStatus")
+                                      List<Project.EnhancedStatus> enhancedStatusList,
+                                      @Parameter(description = "Optionally excludes archived projects from being returned", required = false, deprecated = true)
                                       @QueryParam("excludeInactive") boolean excludeInactive,
                                       @Parameter(description = "Optionally excludes children projects from being returned", required = false)
                                       @QueryParam("onlyRoot") boolean onlyRoot) {
         try (QueryManager qm = new QueryManager(getAlpineRequest())) {
+            if (enhancedStatusList.isEmpty()) {
+                enhancedStatusList = QueryManager.getEnhancedStatusList(excludeInactive);
+            }
+            List<Project.EnhancedStatus> finalEnhancedStatusList = enhancedStatusList;
             final Team team = qm.getObjectByUuid(Team.class, uuid);
             if (team != null) {
-                final PaginatedResult result = qm.getProjects(team, excludeInactive, true, onlyRoot);
+                final PaginatedResult result = qm.getProjects(team, finalEnhancedStatusList, true, onlyRoot);
                 return Response.ok(result.getObjects()).header(TOTAL_COUNT_HEADER, result.getTotal()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).entity("The UUID of the team could not be found.").build();
