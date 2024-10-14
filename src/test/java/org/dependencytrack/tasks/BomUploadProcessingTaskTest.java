@@ -72,6 +72,7 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.awaitility.Awaitility.await;
 import static org.dependencytrack.assertion.Assertions.assertConditionWithTimeout;
 
+
 public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
 
     public static class EventSubscriber implements alpine.event.framework.Subscriber {
@@ -137,7 +138,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
             }
         }
 
-        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final VulnerableSoftware vs = new VulnerableSoftware();
         vs.setPurlType("maven");
@@ -217,7 +218,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
         assertThat(component.getSupplier().getContacts().get(0).getEmail()).isEqualTo("foojr@bar.com");
         assertThat(component.getSupplier().getContacts().get(0).getPhone()).isEqualTo("123-456-7890");
 
-        assertThat(component.getAuthors().get(0).getName()).isEqualTo("Sometimes this field is long because it is composed of a list of authors......................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................");
+        assertThat(component.getAuthor()).isEqualTo("Sometimes this field is long because it is composed of a list of authors......................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................");
         assertThat(component.getPublisher()).isEqualTo("Example Incorporated");
         assertThat(component.getGroup()).isEqualTo("com.example");
         assertThat(component.getName()).isEqualTo("xmlutil");
@@ -279,7 +280,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
 
     @Test
     public void informWithEmptyBomTest() throws Exception {
-        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final var bomUploadEvent = new BomUploadEvent(qm.detach(Project.class, project.getId()),
                 resourceToByteArray("/unit/bom-empty.json"));
@@ -296,7 +297,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
 
     @Test
     public void informWithInvalidCycloneDxBomTest() throws Exception {
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final byte[] bomBytes = """
                 {
@@ -350,7 +351,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
 
     @Test
     public void informWithComponentsUnderMetadataBomTest() throws Exception {
-        final var project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final var project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final var bomUploadEvent = new BomUploadEvent(qm.detach(Project.class, project.getId()),
                 resourceToByteArray("/unit/bom-metadata-components.json"));
@@ -465,7 +466,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
 
     @Test
     public void informWithBloatedBomTest() throws Exception {
-        final var project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final var project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final var bomUploadEvent = new BomUploadEvent(qm.detach(Project.class, project.getId()),
                 resourceToByteArray("/unit/bom-bloated.json"));
@@ -520,7 +521,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
         customLicense.setName("custom license foobar");
         qm.createCustomLicense(customLicense, false);
 
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final var bomUploadEvent = new BomUploadEvent(qm.detach(Project.class, project.getId()),
                 resourceToByteArray("/unit/bom-custom-license.json"));
@@ -882,7 +883,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
 
     @Test
     public void informWithBomContainingServiceTest() throws Exception {
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final var bomUploadEvent = new BomUploadEvent(qm.detach(Project.class, project.getId()),
                 resourceToByteArray("/unit/bom-service.json"));
@@ -1177,7 +1178,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
 
     @Test // https://github.com/DependencyTrack/dependency-track/issues/1905
     public void informIssue1905Test() throws Exception {
-        final var project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final var project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         for (int i = 0; i < 3; i++) {
             var bomUploadEvent = new BomUploadEvent(qm.detach(Project.class, project.getId()),
@@ -1211,7 +1212,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
 
     @Test // https://github.com/DependencyTrack/dependency-track/issues/2519
     public void informIssue2519Test() throws Exception {
-        final var project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final var project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         // Upload the same BOM again a few times.
         // Ensure processing does not fail, and the number of components ingested doesn't change.
@@ -1231,7 +1232,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
 
     @Test // https://github.com/DependencyTrack/dependency-track/issues/2859
     public void informIssue2859Test() throws Exception {
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final byte[] bomBytes = resourceToByteArray("/unit/bom-issue2859.xml");
 
@@ -1284,7 +1285,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
 
     @Test // https://github.com/DependencyTrack/dependency-track/issues/3371
     public void informIssue3371Test() throws Exception {
-        final var project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final var project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         // Upload the same BOM again a few times.
         // Ensure processing does not fail, and the number of components ingested doesn't change.
@@ -1441,7 +1442,7 @@ public class BomUploadProcessingTaskTest extends PersistenceCapableTest {
 
     @Test
     public void informIssue3936Test() throws Exception{
-        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        final Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         List<String> boms = new ArrayList<>(Arrays.asList("/unit/bom-issue3936-authors.json", "/unit/bom-issue3936-author.json", "/unit/bom-issue3936-both.json"));
         for(String bom : boms){
           final var bomUploadEvent = new BomUploadEvent(qm.detach(Project.class, project.getId()),

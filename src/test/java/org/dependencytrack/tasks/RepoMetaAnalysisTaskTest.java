@@ -79,7 +79,7 @@ public class RepoMetaAnalysisTaskTest extends PersistenceCapableTest {
                         .withHeader("X-Checksum-SHA256", "sha256hash")
                         .withHeader("Last-Modified", "Thu, 07 Jul 2022 14:00:00 GMT")));
         EventService.getInstance().subscribe(RepositoryMetaEvent.class, RepositoryMetaAnalyzerTask.class);
-        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("junit");
@@ -125,7 +125,7 @@ public class RepoMetaAnalysisTaskTest extends PersistenceCapableTest {
                         .withHeader("X-Checksum-SHA256", "sha256hash")
                         .withHeader("Last-Modified", "Thu, 07 Jul 2022 14:00:00 GMT")));
         EventService.getInstance().subscribe(RepositoryMetaEvent.class, RepositoryMetaAnalyzerTask.class);
-        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("test1");
@@ -171,7 +171,7 @@ public class RepoMetaAnalysisTaskTest extends PersistenceCapableTest {
                         .withHeader("X-Checksum-SHA256", "sha256hash")
                         .withHeader("Last-Modified", "Thu, 07 Jul 2022 14:00:00 GMT")));
         EventService.getInstance().subscribe(RepositoryMetaEvent.class, RepositoryMetaAnalyzerTask.class);
-        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("junit");
@@ -217,7 +217,7 @@ public class RepoMetaAnalysisTaskTest extends PersistenceCapableTest {
                         .withHeader("X-Checksum-SHA256", "sha256hash")
                         .withHeader("Last-Modified", "Thu, 07 Jul 2022 14:00:00 GMT")));
         EventService.getInstance().subscribe(RepositoryMetaEvent.class, RepositoryMetaAnalyzerTask.class);
-        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("Acme Example", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("test3");

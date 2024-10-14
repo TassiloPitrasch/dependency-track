@@ -32,10 +32,11 @@ public final class IndexConstants {
     static final String PROJECT_UUID = "uuid";
     static final String PROJECT_NAME = "name";
     static final String PROJECT_VERSION = "version";
+    static final String PROJECT_ENHANCED_STATUS = "enhancedStatus";
     static final String PROJECT_PROPERTIES = "properties";
     static final String PROJECT_DESCRIPTION = "description";
     static final String[] PROJECT_SEARCH_FIELDS = {
-            PROJECT_UUID, PROJECT_NAME, PROJECT_VERSION, PROJECT_PROPERTIES, PROJECT_DESCRIPTION
+            PROJECT_UUID, PROJECT_NAME, PROJECT_VERSION, PROJECT_ENHANCED_STATUS, PROJECT_PROPERTIES, PROJECT_DESCRIPTION
     };
 
     static final String COMPONENT_UUID = "uuid";

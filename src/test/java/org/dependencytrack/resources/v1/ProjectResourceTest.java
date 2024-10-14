@@ -99,7 +99,7 @@ public class ProjectResourceTest extends ResourceTest {
     @Test
     public void getProjectsDefaultRequestTest() {
         for (int i=0; i<1000; i++) {
-            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, true, false);
+            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         }
         Response response = jersey.target(V1_PROJECT)
                 .request()
@@ -119,12 +119,12 @@ public class ProjectResourceTest extends ResourceTest {
         enablePortfolioAccessControl();
 
         // Create project and give access to current principal's team.
-        final Project accessProject = qm.createProject("acme-app-a", null, "1.0.0", null, null, null, true, false);
+        final Project accessProject = qm.createProject("acme-app-a", null, "1.0.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         accessProject.setAccessTeams(List.of(team));
         qm.persist(accessProject);
 
         // Create a second project that the current principal has no access to.
-        qm.createProject("acme-app-b", null, "2.0.0", null, null, null, true, false);
+        qm.createProject("acme-app-b", null, "2.0.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final Response response = jersey.target(V1_PROJECT)
                 .request()
@@ -142,7 +142,7 @@ public class ProjectResourceTest extends ResourceTest {
     @Test
     public void getProjectsByNameRequestTest() {
         for (int i=0; i<1000; i++) {
-            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, true, false);
+            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         }
         Response response = jersey.target(V1_PROJECT)
                 .queryParam("name", "Acme Example")
@@ -161,7 +161,7 @@ public class ProjectResourceTest extends ResourceTest {
     @Test
     public void getProjectsByInvalidNameRequestTest() {
         for (int i=0; i<1000; i++) {
-            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, true, false);
+            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         }
         Response response = jersey.target(V1_PROJECT)
                 .queryParam("name", "blah")
@@ -178,14 +178,15 @@ public class ProjectResourceTest extends ResourceTest {
     @Test
     public void getProjectsByNameActiveOnlyRequestTest() {
         for (int i=0; i<500; i++) {
-            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, true, false);
+            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         }
         for (int i=500; i<1000; i++) {
-            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, false, false);
+            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, Project.EnhancedStatus.ARCHIVED, false);
         }
         Response response = jersey.target(V1_PROJECT)
                 .queryParam("name", "Acme Example")
-                .queryParam("excludeInactive", "true")
+                .queryParam("enhancedStatus", "IN_DEVELOPMENT")
+                .queryParam("enhancedStatus", "IN_PRODUCTION")
                 .request()
                 .header(X_API_KEY, apiKey)
                 .get(Response.class);
@@ -199,7 +200,7 @@ public class ProjectResourceTest extends ResourceTest {
     @Test
     public void getProjectLookupTest() {
         for (int i=0; i<500; i++) {
-            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, false, false);
+            qm.createProject("Acme Example", null, String.valueOf(i), null, null, null, Project.EnhancedStatus.ARCHIVED, false);
         }
         Response response = jersey.target(V1_PROJECT+"/lookup")
                 .queryParam("name", "Acme Example")
@@ -257,8 +258,8 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void getProjectsAscOrderedRequestTest() {
-        qm.createProject("ABC", null, "1.0", null, null, null, true, false);
-        qm.createProject("DEF", null, "1.0", null, null, null, true, false);
+        qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("DEF", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response response = jersey.target(V1_PROJECT)
                 .queryParam(ORDER_BY, "name")
                 .queryParam(SORT, SORT_ASC)
@@ -274,8 +275,8 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void getProjectsDescOrderedRequestTest() {
-        qm.createProject("ABC", null, "1.0", null, null, null, true, false);
-        qm.createProject("DEF", null, "1.0", null, null, null, true, false);
+        qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("DEF", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response response = jersey.target(V1_PROJECT)
                 .queryParam(ORDER_BY, "name")
                 .queryParam(SORT, SORT_DESC)
@@ -369,9 +370,9 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void validateProjectVersionsActiveInactiveTest() {
-        Project project = qm.createProject("ABC", null, "1.0", null, null, null, true, false);
-        qm.createProject("ABC", null, "2.0", null, null, null, false, false);
-        qm.createProject("ABC", null, "3.0", null, null, null, true, false);
+        Project project = qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("ABC", null, "2.0", null, null, null, Project.EnhancedStatus.ARCHIVED, false);
+        qm.createProject("ABC", null, "3.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         Response response = jersey.target(V1_PROJECT + "/" + project.getUuid())
                 .request()
@@ -399,7 +400,7 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void getProjectByInvalidUuidTest() {
-        qm.createProject("ABC", null, "1.0", null, null, null, true, false);
+        qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response response = jersey.target(V1_PROJECT + "/" + UUID.randomUUID())
                 .request()
                 .header(X_API_KEY, apiKey)
@@ -415,8 +416,8 @@ public class ProjectResourceTest extends ResourceTest {
         List<Tag> tags = new ArrayList<>();
         Tag tag = qm.createTag("production");
         tags.add(tag);
-        qm.createProject("ABC", null, "1.0", tags, null, null, true, false);
-        qm.createProject("DEF", null, "1.0", null, null, null, true, false);
+        qm.createProject("ABC", null, "1.0", tags, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("DEF", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response response = jersey.target(V1_PROJECT + "/tag/" + "production")
                 .request()
                 .header(X_API_KEY, apiKey)
@@ -433,8 +434,8 @@ public class ProjectResourceTest extends ResourceTest {
         List<Tag> tags = new ArrayList<>();
         Tag tag = qm.createTag("PRODUCTION");
         tags.add(tag);
-        qm.createProject("ABC", null, "1.0", tags, null, null, true, false);
-        qm.createProject("DEF", null, "1.0", null, null, null, true, false);
+        qm.createProject("ABC", null, "1.0", tags, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("DEF", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response response = jersey.target(V1_PROJECT + "/tag/" + "production")
                 .request()
                 .header(X_API_KEY, apiKey)
@@ -451,8 +452,8 @@ public class ProjectResourceTest extends ResourceTest {
         List<Tag> tags = new ArrayList<>();
         Tag tag = qm.createTag("production");
         tags.add(tag);
-        qm.createProject("ABC", null, "1.0", tags, null, null, true, false);
-        qm.createProject("DEF", null, "1.0", null, null, null, true, false);
+        qm.createProject("ABC", null, "1.0", tags, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("DEF", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response response = jersey.target(V1_PROJECT + "/tag/" + "stable")
                 .request()
                 .header(X_API_KEY, apiKey)
@@ -504,11 +505,11 @@ public class ProjectResourceTest extends ResourceTest {
     }
 
     @Test
-    public void createProjectInactiveParentTest() {
+    public void createProjectArchivedParentTest() {
         final var parentProject = new Project();
         parentProject.setName("acme-app-parent");
         parentProject.setVersion("1.0.0");
-        parentProject.setActive(false);
+        parentProject.setEnhancedStatus(Project.EnhancedStatus.ARCHIVED);
         qm.persist(parentProject);
 
         final Response response = jersey.target(V1_PROJECT)
@@ -524,7 +525,7 @@ public class ProjectResourceTest extends ResourceTest {
                         }
                         """.formatted(parentProject.getUuid())));
         assertThat(response.getStatus()).isEqualTo(409);
-        assertThat(getPlainTextBody(response)).isEqualTo("An inactive Parent cannot be selected as parent");
+        assertThat(getPlainTextBody(response)).isEqualTo("An archived Project cannot be selected as parent");
     }
 
     @Test
@@ -959,7 +960,7 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void updateProjectTest() {
-        Project project = qm.createProject("ABC", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         project.setDescription("Test project");
         Response response = jersey.target(V1_PROJECT)
                 .request()
@@ -1012,10 +1013,10 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void updateProjectTestIsActiveEqualsNull() {
-        Project project = qm.createProject("ABC", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         project.setDescription("Test project");
-        project.setActive(null);
-        Assert.assertNull(project.isActive());
+        project.setEnhancedStatus(null);
+        Assert.assertNull(project.getEnhancedStatus());
         Response response = jersey.target(V1_PROJECT)
                 .request()
                 .header(X_API_KEY, apiKey)
@@ -1031,7 +1032,7 @@ public class ProjectResourceTest extends ResourceTest {
     @Test
     public void updateProjectTagsTest() {
         final var tags = Stream.of("tag1", "tag2").map(qm::createTag).collect(Collectors.toUnmodifiableList());
-        final var p1 = qm.createProject("ABC", "Test project", "1.0", tags, null, null, true, false);
+        final var p1 = qm.createProject("ABC", "Test project", "1.0", tags, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final var jsonProject = new Project();
         jsonProject.setUuid(p1.getUuid());
@@ -1087,7 +1088,7 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void updateProjectEmptyNameTest() {
-        Project project = qm.createProject("ABC", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         project.setName(" ");
         Response response = jersey.target(V1_PROJECT)
                 .request()
@@ -1098,8 +1099,8 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void updateProjectDuplicateTest() {
-        qm.createProject("ABC", null, "1.0", null, null, null, true, false);
-        Project project = qm.createProject("DEF", null, "1.0", null, null, null, true, false);
+        qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project project = qm.createProject("DEF", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         project.setName("ABC");
         Response response = jersey.target(V1_PROJECT)
                 .request()
@@ -1114,7 +1115,7 @@ public class ProjectResourceTest extends ResourceTest {
     public void updateProjectAsLatestTest() {
         // create project not as latest
         Project project = qm.createProject("ABC", null, "1.0", null, null, null,
-                true, false, false);
+                Project.EnhancedStatus.IN_DEVELOPMENT, false, false);
 
         // make it latest by update
         var jsonProject = qm.detach(project);
@@ -1129,7 +1130,7 @@ public class ProjectResourceTest extends ResourceTest {
 
         // add another project version, "forget" to make it latest
         final Project newProject = qm.createProject("ABC", null, "1.0.1", null, null, null,
-                true, false, false);
+                Project.EnhancedStatus.IN_DEVELOPMENT, false, false);
         // make the new version latest afterwards via update
         jsonProject = qm.detach(newProject);
         jsonProject.setIsLatest(true);
@@ -1210,7 +1211,7 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void deleteProjectTest() {
-        Project project = qm.createProject("ABC", null, "1.0", null, null, null, true, false);
+        Project project = qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response response = jersey.target(V1_PROJECT + "/" + project.getUuid().toString())
                 .request()
                 .header(X_API_KEY, apiKey)
@@ -1220,7 +1221,7 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void deleteProjectInvalidUuidTest() {
-        qm.createProject("ABC", null, "1.0", null, null, null, true, false);
+        qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response response = jersey.target(V1_PROJECT + "/" + UUID.randomUUID().toString())
                 .request()
                 .header(X_API_KEY, apiKey)
@@ -1231,7 +1232,7 @@ public class ProjectResourceTest extends ResourceTest {
     @Test
     public void patchProjectNotModifiedTest() {
         final var tags = Stream.of("tag1", "tag2").map(qm::createTag).collect(Collectors.toUnmodifiableList());
-        final var p1 = qm.createProject("ABC", "Test project", "1.0", tags, null, null, true, false);
+        final var p1 = qm.createProject("ABC", "Test project", "1.0", tags, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final var jsonProject = new Project();
         jsonProject.setDescription(p1.getDescription());
@@ -1247,8 +1248,8 @@ public class ProjectResourceTest extends ResourceTest {
     @Test
     public void patchProjectNameVersionConflictTest() {
         final var tags = Stream.of("tag1", "tag2").map(qm::createTag).collect(Collectors.toUnmodifiableList());
-        final var p1 = qm.createProject("ABC", "Test project", "1.0", tags, null, null, true, false);
-        qm.createProject("ABC", "Test project", "0.9", null, null, null, false, false);
+        final var p1 = qm.createProject("ABC", "Test project", "1.0", tags, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("ABC", "Test project", "0.9", null, null, null, Project.EnhancedStatus.ARCHIVED, false);
         final var jsonProject = new Project();
         jsonProject.setVersion("0.9");
         final var response = jersey.target(V1_PROJECT + "/" + p1.getUuid())
@@ -1294,7 +1295,7 @@ public class ProjectResourceTest extends ResourceTest {
     @Test
     public void patchProjectSuccessfullyPatchedTest() {
         final var tags = Stream.of("tag1", "tag2").map(qm::createTag).collect(Collectors.toUnmodifiableList());
-        final var p1 = qm.createProject("ABC", "Test project", "1.0", tags, null, null, true, false);
+        final var p1 = qm.createProject("ABC", "Test project", "1.0", tags, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         final var projectManufacturerContact = new OrganizationalContact();
         projectManufacturerContact.setName("manufacturerContactName");
         final var projectManufacturer = new OrganizationalEntity();
@@ -1311,7 +1312,7 @@ public class ProjectResourceTest extends ResourceTest {
         p1.setSupplier(projectSupplier);
         qm.persist(p1);
         final var jsonProject = new Project();
-        jsonProject.setActive(false);
+        jsonProject.setEnhancedStatus(Project.EnhancedStatus.ARCHIVED);
         jsonProject.setName("new name");
         jsonProject.setPublisher("new publisher");
         jsonProject.setTags(Stream.of("tag4").map(name -> {
@@ -1385,7 +1386,7 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void patchProjectExternalReferencesTest() {
-        final var project = qm.createProject("referred-project", "ExtRef test project", "1.0", null, null, null, true, false);
+        final var project = qm.createProject("referred-project", "ExtRef test project", "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         final var ref1 = new ExternalReference();
         ref1.setType(Type.VCS);
         ref1.setUrl("https://github.com/DependencyTrack/awesomeness");
@@ -1418,9 +1419,9 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void patchProjectParentTest() {
-        final Project parent = qm.createProject("ABC", null, "1.0", null, null, null, true, false);
-        final Project project = qm.createProject("DEF", null, "2.0", null, parent, null, true, false);
-        final Project newParent = qm.createProject("GHI", null, "3.0", null, null, null, true, false);
+        final Project parent = qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        final Project project = qm.createProject("DEF", null, "2.0", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        final Project newParent = qm.createProject("GHI", null, "3.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final JsonObject jsonProject = Json.createObjectBuilder()
                 .add("parent", Json.createObjectBuilder()
@@ -1463,8 +1464,8 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void patchProjectParentNotFoundTest() {
-        final Project parent = qm.createProject("ABC", null, "1.0", null, null, null, true, false);
-        final Project project = qm.createProject("DEF", null, "2.0", null, parent, null, true, false);
+        final Project parent = qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        final Project project = qm.createProject("DEF", null, "2.0", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         final JsonObject jsonProject = Json.createObjectBuilder()
                 .add("parent", Json.createObjectBuilder()
@@ -1490,7 +1491,7 @@ public class ProjectResourceTest extends ResourceTest {
     public void patchProjectAsLatestTest() {
         // create project not as latest
         Project project = qm.createProject("ABC", null, "1.0", null, null, null,
-                true, false, false);
+                Project.EnhancedStatus.IN_DEVELOPMENT, false, false);
 
         // make it latest by patch
         var jsonProject = new Project();
@@ -1506,7 +1507,7 @@ public class ProjectResourceTest extends ResourceTest {
 
         // add another project version, "forget" to make it latest
         final Project newProject = qm.createProject("ABC", null, "1.0.1", null, null, null,
-                true, false, false);
+                Project.EnhancedStatus.IN_DEVELOPMENT, false, false);
         // make the new version latest afterwards via update
         jsonProject = new Project();
         jsonProject.setIsLatest(true);
@@ -1591,9 +1592,9 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void getRootProjectsTest() {
-        Project parent = qm.createProject("ABC", null, "1.0", null, null, null, true, false);
-        Project child = qm.createProject("DEF", null, "1.0", null, parent, null, true, false);
-        qm.createProject("GHI", null, "1.0", null, child, null, true, false);
+        Project parent = qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project child = qm.createProject("DEF", null, "1.0", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("GHI", null, "1.0", null, child, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response response = jersey.target(V1_PROJECT)
                 .queryParam("onlyRoot", true)
                 .request()
@@ -1609,10 +1610,10 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void getChildrenProjectsTest() {
-        Project parent = qm.createProject("ABC", null, "1.0", null, null, null, true, false);
-        Project child = qm.createProject("DEF", null, "1.0", null, parent, null, true, false);
-        qm.createProject("GHI", null, "1.0", null, parent, null, true, false);
-        qm.createProject("JKL", null, "1.0", null, child, null, true, false);
+        Project parent = qm.createProject("ABC", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project child = qm.createProject("DEF", null, "1.0", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("GHI", null, "1.0", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("JKL", null, "1.0", null, child, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response response = jersey.target(V1_PROJECT + "/" + parent.getUuid().toString() + "/children")
                 .request()
                 .header(X_API_KEY, apiKey)
@@ -1627,14 +1628,14 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void updateChildAsParentOfChild() {
-        Project parent = qm.createProject("ABC",null, "1.0", null, null, null, true, false);
-        Project child = qm.createProject("DEF", null, "1.0", null, parent, null, true, false);
+        Project parent = qm.createProject("ABC",null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project child = qm.createProject("DEF", null, "1.0", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         Project tmpProject = new Project();
         tmpProject.setName(parent.getName());
         tmpProject.setVersion(parent.getVersion());
         tmpProject.setUuid(parent.getUuid());
-        tmpProject.setActive(true);
+        tmpProject.setEnhancedStatus(Project.EnhancedStatus.IN_DEVELOPMENT);
 
         tmpProject.setParent(child);
         Assert.assertThrows(IllegalArgumentException.class, () -> qm.updateProject(tmpProject, true));
@@ -1642,27 +1643,27 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void updateParentToInactiveWithActiveChild() {
-        Project parent = qm.createProject("ABC",null, "1.0", null, null, null, true, false);
-        qm.createProject("DEF", null, "1.0", null, parent, null, true, false);
+        Project parent = qm.createProject("ABC",null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("DEF", null, "1.0", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         Project tmpProject = new Project();
         tmpProject.setName(parent.getName());
         tmpProject.setVersion(parent.getVersion());
         tmpProject.setUuid(parent.getUuid());
-        tmpProject.setActive(false);
+        tmpProject.setEnhancedStatus(Project.EnhancedStatus.ARCHIVED);
 
         Assert.assertThrows(IllegalArgumentException.class, () -> qm.updateProject(tmpProject, true));
     }
 
     @Test
     public void updateProjectParentToSelf() {
-        Project parent = qm.createProject("ABC",null, "1.0", null, null, null, true, false);
+        Project parent = qm.createProject("ABC",null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         Project tmpProject = new Project();
         tmpProject.setName(parent.getName());
         tmpProject.setVersion(parent.getVersion());
         tmpProject.setUuid(parent.getUuid());
-        tmpProject.setActive(parent.isActive());
+        tmpProject.setEnhancedStatus(parent.getEnhancedStatus());
         tmpProject.setParent(parent);
 
         Assert.assertThrows(IllegalArgumentException.class, () -> qm.updateProject(tmpProject, true));
@@ -1670,10 +1671,10 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void getProjectsWithoutDescendantsOfTest() {
-        Project grandParent = qm.createProject("ABC",null, "1.0", null, null, null, true, false);
-        Project parent = qm.createProject("DEF", null, "1.0", null, grandParent, null, true, false);
-        Project child = qm.createProject("GHI", null, "1.0", null, parent, null, true, false);
-        qm.createProject("JKL", null, "1.0", null, child, null, true, false);
+        Project grandParent = qm.createProject("ABC",null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project parent = qm.createProject("DEF", null, "1.0", null, grandParent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        Project child = qm.createProject("GHI", null, "1.0", null, parent, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("JKL", null, "1.0", null, child, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         Response response = jersey.target(V1_PROJECT + "/withoutDescendantsOf/" + parent.getUuid())
                 .request()
@@ -2137,9 +2138,9 @@ public class ProjectResourceTest extends ResourceTest {
 
     @Test
     public void getLatestProjectTest() {
-        qm.createProject("Acme Example", null, "1.0.0", null, null, null, true, false);
-        qm.createProject("Acme Example", null, "1.0.2", null, null, null, true, true, false);
-        qm.createProject("Different project", null, "1.0.3", null, null, null, true, true, false);
+        qm.createProject("Acme Example", null, "1.0.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
+        qm.createProject("Acme Example", null, "1.0.2", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, true, false);
+        qm.createProject("Different project", null, "1.0.3", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, true, false);
 
         Response response = jersey.target(V1_PROJECT_LATEST + "Acme Example")
                 .request()
@@ -2157,11 +2158,11 @@ public class ProjectResourceTest extends ResourceTest {
         enablePortfolioAccessControl();
 
         // Create project and give access to current principal's team.
-        Project accessProject = qm.createProject("acme-app-a", null, "1.0.0", null, null, null, true, false, false);
+        Project accessProject = qm.createProject("acme-app-a", null, "1.0.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false, false);
         accessProject.setAccessTeams(List.of(team));
         qm.persist(accessProject);
 
-        accessProject = qm.createProject("acme-app-a", null, "1.0.2", null, null, null, true, true, false);
+        accessProject = qm.createProject("acme-app-a", null, "1.0.2", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, true, false);
         accessProject.setAccessTeams(List.of(team));
         qm.persist(accessProject);
 
@@ -2181,8 +2182,8 @@ public class ProjectResourceTest extends ResourceTest {
         enablePortfolioAccessControl();
 
         // Create projects and give NO access
-        qm.createProject("acme-app-a", null, "1.0.0", null, null, null, true, false, false);
-        qm.createProject("acme-app-a", null, "1.0.2", null, null, null, true, true, false);
+        qm.createProject("acme-app-a", null, "1.0.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false, false);
+        qm.createProject("acme-app-a", null, "1.0.2", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, true, false);
 
         final Response response = jersey.target(V1_PROJECT_LATEST + "acme-app-a")
                 .request()

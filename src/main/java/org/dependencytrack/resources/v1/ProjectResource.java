@@ -113,13 +113,20 @@ public class ProjectResource extends AlpineResource {
     @PermissionRequired(Permissions.Constants.VIEW_PORTFOLIO)
     public Response getProjects(@Parameter(description = "The optional name of the project to query on", required = false)
                                 @QueryParam("name") String name,
-                                @Parameter(description = "Optionally excludes inactive projects from being returned", required = false)
-                                @QueryParam("excludeInactive") boolean excludeInactive,
+                                @Parameter(description = "Filters by Project Status")
+                                @QueryParam(value = "enhancedStatus")
+                                List<Project.EnhancedStatus> enhancedStatusList,
                                 @Parameter(description = "Optionally excludes children projects from being returned", required = false)
                                 @QueryParam("onlyRoot") boolean onlyRoot,
                                 @Parameter(description = "The UUID of the team which projects shall be excluded", schema = @Schema(type = "string", format = "uuid"), required = false)
-                                @QueryParam("notAssignedToTeamWithUuid") @ValidUuid String notAssignedToTeamWithUuid) {
+                                @QueryParam("notAssignedToTeamWithUuid") @ValidUuid String notAssignedToTeamWithUuid,
+                                @Parameter(description = "Optionally excludes inactive projects from being returned", required = false, deprecated = true)
+                                @QueryParam("excludeInactive") boolean excludeInactive) {
         try (QueryManager qm = new QueryManager(getAlpineRequest())) {
+            if (enhancedStatusList.isEmpty()) {
+                enhancedStatusList = QueryManager.getEnhancedStatusList(excludeInactive);
+            }
+            List<Project.EnhancedStatus> finalEnhancedStatusList = enhancedStatusList;
             Team notAssignedToTeam = null;
             if (StringUtils.isNotEmpty(notAssignedToTeamWithUuid)) {
                 notAssignedToTeam = qm.getObjectByUuid(Team.class, notAssignedToTeamWithUuid);
@@ -128,7 +135,7 @@ public class ProjectResource extends AlpineResource {
                 }
             }
 
-            final PaginatedResult result = (name != null) ? qm.getProjects(name, excludeInactive, onlyRoot, notAssignedToTeam) : qm.getProjects(true, excludeInactive, onlyRoot, notAssignedToTeam);
+            final PaginatedResult result = (name != null) ? qm.getProjects(name, finalEnhancedStatusList, onlyRoot, notAssignedToTeam) : qm.getProjects(true, finalEnhancedStatusList, onlyRoot, notAssignedToTeam);
             return Response.ok(result.getObjects()).header(TOTAL_COUNT_HEADER, result.getTotal()).build();
         }
     }
@@ -263,13 +270,20 @@ public class ProjectResource extends AlpineResource {
     public Response getProjectsByTag(
             @Parameter(description = "The tag to query on", required = true)
             @PathParam("tag") String tagString,
-            @Parameter(description = "Optionally excludes inactive projects from being returned", required = false)
-            @QueryParam("excludeInactive") boolean excludeInactive,
+            @Parameter(description = "Filters by Project Status")
+            @QueryParam(value = "enhancedStatus")
+            List<Project.EnhancedStatus> enhancedStatusList,
             @Parameter(description = "Optionally excludes children projects from being returned", required = false)
-            @QueryParam("onlyRoot") boolean onlyRoot) {
+            @QueryParam("onlyRoot") boolean onlyRoot,
+            @Parameter(description = "Optionally excludes inactive projects from being returned", required = false, deprecated = true)
+            @QueryParam("excludeInactive") boolean excludeInactive) {
         try (QueryManager qm = new QueryManager(getAlpineRequest())) {
+            if (enhancedStatusList.isEmpty()) {
+                enhancedStatusList = QueryManager.getEnhancedStatusList(excludeInactive);
+            }
+            List<Project.EnhancedStatus> finalEnhancedStatusList = enhancedStatusList;
             final Tag tag = qm.getTagByName(tagString);
-            final PaginatedResult result = qm.getProjects(tag, true, excludeInactive, onlyRoot);
+            final PaginatedResult result = qm.getProjects(tag, true, finalEnhancedStatusList, onlyRoot);
             return Response.ok(result.getObjects()).header(TOTAL_COUNT_HEADER, result.getTotal()).build();
         }
     }
@@ -295,13 +309,20 @@ public class ProjectResource extends AlpineResource {
     public Response getProjectsByClassifier(
             @Parameter(description = "The classifier to query on", required = true)
             @PathParam("classifier") String classifierString,
-            @Parameter(description = "Optionally excludes inactive projects from being returned", required = false)
-            @QueryParam("excludeInactive") boolean excludeInactive,
+            @Parameter(description = "Filters by Project Status")
+            @QueryParam(value = "enhancedStatus")
+            List<Project.EnhancedStatus> enhancedStatusList,
             @Parameter(description = "Optionally excludes children projects from being returned", required = false)
-            @QueryParam("onlyRoot") boolean onlyRoot) {
+            @QueryParam("onlyRoot") boolean onlyRoot,
+            @Parameter(description = "Optionally excludes inactive projects from being returned", required = false, deprecated = true)
+            @QueryParam("excludeInactive") boolean excludeInactive) {
         try (QueryManager qm = new QueryManager(getAlpineRequest())) {
+            if (enhancedStatusList.isEmpty()) {
+                enhancedStatusList = QueryManager.getEnhancedStatusList(excludeInactive);
+            }
+            List<Project.EnhancedStatus> finalEnhancedStatusList = enhancedStatusList;
             final Classifier classifier = Classifier.valueOf(classifierString);
-            final PaginatedResult result = qm.getProjects(classifier, true, excludeInactive, onlyRoot);
+            final PaginatedResult result = qm.getProjects(classifier, true, finalEnhancedStatusList, onlyRoot);
             return Response.ok(result.getObjects()).header(TOTAL_COUNT_HEADER, result.getTotal()).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity("The classifier type specified is not valid.").build();
@@ -336,7 +357,7 @@ public class ProjectResource extends AlpineResource {
             @ApiResponse(responseCode = "403", description = "The project version cannot be created as latest version because access to current latest version is forbidden."),
             @ApiResponse(responseCode = "409", description = """
                     <ul>
-                      <li>An inactive Parent cannot be selected as parent, or</li>
+                      <li>An archived Parent cannot be selected as parent, or</li>
                       <li>A project with the specified name already exists</li>
                     </ul>""")
     })
@@ -457,7 +478,7 @@ public class ProjectResource extends AlpineResource {
                     LOGGER.debug("Failed to create project %s".formatted(jsonProject), e);
                     throw new ClientErrorException(Response
                             .status(Response.Status.CONFLICT)
-                            .entity("An inactive Parent cannot be selected as parent")
+                            .entity("An archived project cannot be selected as parent")
                             .build());
                 } catch (RuntimeException e) {
                     LOGGER.error("Failed to create project %s".formatted(jsonProject), e);
@@ -472,6 +493,7 @@ public class ProjectResource extends AlpineResource {
             return Response.status(Response.Status.CREATED).entity(createdProject).build();
         }
     }
+
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -492,8 +514,8 @@ public class ProjectResource extends AlpineResource {
             @ApiResponse(responseCode = "404", description = "The UUID of the project could not be found"),
             @ApiResponse(responseCode = "409", description = """
                     <ul>
-                      <li>An inactive Parent cannot be selected as parent, or</li>
-                      <li>Project cannot be set to inactive if active children are present, or</li>
+                      <li>An archived Parent cannot be selected as parent, or</li>
+                      <li>Project cannot be set to archived if active children are present, or</li>
                       <li>A project with the specified name already exists, or</li>
                       <li>A project cannot select itself as a parent</li>
                     </ul>""")
@@ -507,6 +529,7 @@ public class ProjectResource extends AlpineResource {
                 validator.validateProperty(jsonProject, "group"),
                 validator.validateProperty(jsonProject, "name"),
                 validator.validateProperty(jsonProject, "description"),
+                validator.validateProperty(jsonProject, "enhancedStatus"),
                 validator.validateProperty(jsonProject, "version"),
                 validator.validateProperty(jsonProject, "classifier"),
                 validator.validateProperty(jsonProject, "cpe"),
@@ -594,8 +617,8 @@ public class ProjectResource extends AlpineResource {
             @ApiResponse(responseCode = "404", description = "The UUID of the project could not be found"),
             @ApiResponse(responseCode = "409", description = """
                     <ul>
-                      <li>An inactive Parent cannot be selected as parent, or</li>
-                      <li>Project cannot be set to inactive if active children are present, or</li>
+                      <li>An archived Parent cannot be selected as parent, or</li>
+                      <li>Project cannot be set to archived if active children are present, or</li>
                       <li>A project with the specified name already exists, or</li>
                       <li>A project cannot select itself as a parent</li>
                     </ul>""")
@@ -613,6 +636,7 @@ public class ProjectResource extends AlpineResource {
                 validator.validateProperty(jsonProject, "group"),
                 jsonProject.getName() != null ? validator.validateProperty(jsonProject, "name") : Set.of(),
                 validator.validateProperty(jsonProject, "description"),
+                validator.validateProperty(jsonProject, "enhancedStatus"),
                 validator.validateProperty(jsonProject, "version"),
                 validator.validateProperty(jsonProject, "classifier"),
                 validator.validateProperty(jsonProject, "cpe"),
@@ -668,7 +692,7 @@ public class ProjectResource extends AlpineResource {
                 modified |= setIfDifferent(jsonProject, project, Project::getCpe, Project::setCpe);
                 modified |= setIfDifferent(jsonProject, project, Project::getPurl, Project::setPurl);
                 modified |= setIfDifferent(jsonProject, project, Project::getSwidTagId, Project::setSwidTagId);
-                modified |= setIfDifferent(jsonProject, project, Project::isActive, Project::setActive);
+                modified |= setIfDifferent(jsonProject, project, Project::getEnhancedStatus, Project::setEnhancedStatus);
                 modified |= setIfDifferent(jsonProject, project, Project::getManufacturer, Project::setManufacturer);
                 modified |= setIfDifferent(jsonProject, project, Project::getSupplier, Project::setSupplier);
                 modified |= setIfDifferent(jsonProject, project, Project::isLatest, Project::setIsLatest);
@@ -898,12 +922,19 @@ public class ProjectResource extends AlpineResource {
     @PermissionRequired(Permissions.Constants.VIEW_PORTFOLIO)
     public Response getChildrenProjects(@Parameter(description = "The UUID of the project to get the children from", schema = @Schema(type = "string", format = "uuid"), required = true)
                                         @PathParam("uuid") @ValidUuid String uuid,
-                                        @Parameter(description = "Optionally excludes inactive projects from being returned", required = false)
+                                        @Parameter(description = "Filters by Project Status")
+                                        @QueryParam(value = "enhancedStatus")
+                                        List<Project.EnhancedStatus> enhancedStatusList,
+                                        @Parameter(description = "Optionally excludes inactive projects from being returned", required = false, deprecated = true)
                                         @QueryParam("excludeInactive") boolean excludeInactive) {
         try (QueryManager qm = new QueryManager(getAlpineRequest())) {
             final Project project = qm.getObjectByUuid(Project.class, uuid);
+            if (enhancedStatusList.isEmpty()) {
+                enhancedStatusList = QueryManager.getEnhancedStatusList(excludeInactive);
+            }
+            List<Project.EnhancedStatus> finalEnhancedStatusList = enhancedStatusList;
             if (project != null) {
-                final PaginatedResult result = qm.getChildrenProjects(project.getUuid(), true, excludeInactive);
+                final PaginatedResult result = qm.getChildrenProjects(project.getUuid(), true, finalEnhancedStatusList);
                 if (qm.hasAccess(super.getPrincipal(), project)) {
                     return Response.ok(result.getObjects()).header(TOTAL_COUNT_HEADER, result.getTotal()).build();
                 } else {
@@ -940,13 +971,20 @@ public class ProjectResource extends AlpineResource {
             @PathParam("classifier") String classifierString,
             @Parameter(description = "The UUID of the project to get the children from", schema = @Schema(type = "string", format = "uuid"), required = true)
             @PathParam("uuid") @ValidUuid String uuid,
-            @Parameter(description = "Optionally excludes inactive projects from being returned", required = false)
+            @Parameter(description = "Filters by Project Status")
+            @QueryParam(value = "enhancedStatus")
+            List<Project.EnhancedStatus> enhancedStatusList,
+            @Parameter(description = "Optionally excludes inactive projects from being returned", required = false, deprecated = true)
             @QueryParam("excludeInactive") boolean excludeInactive) {
         try (QueryManager qm = new QueryManager(getAlpineRequest())) {
             final Project project = qm.getObjectByUuid(Project.class, uuid);
+            if (enhancedStatusList.isEmpty()) {
+                enhancedStatusList = QueryManager.getEnhancedStatusList(excludeInactive);
+            }
+            List<Project.EnhancedStatus> finalEnhancedStatusList = enhancedStatusList;
             if (project != null) {
                 final Classifier classifier = Classifier.valueOf(classifierString);
-                final PaginatedResult result = qm.getChildrenProjects(classifier, project.getUuid(), true, excludeInactive);
+                final PaginatedResult result = qm.getChildrenProjects(classifier, project.getUuid(), true, finalEnhancedStatusList);
                 if (qm.hasAccess(super.getPrincipal(), project)) {
                     return Response.ok(result.getObjects()).header(TOTAL_COUNT_HEADER, result.getTotal()).build();
                 } else {
@@ -983,13 +1021,20 @@ public class ProjectResource extends AlpineResource {
             @PathParam("tag") String tagString,
             @Parameter(description = "The UUID of the project to get the children from", schema = @Schema(type = "string", format = "uuid"), required = true)
             @PathParam("uuid") @ValidUuid String uuid,
-            @Parameter(description = "Optionally excludes inactive projects from being returned", required = false)
+            @Parameter(description = "Filters by Project Status")
+            @QueryParam(value = "enhancedStatus")
+            List<Project.EnhancedStatus> enhancedStatusList,
+            @Parameter(description = "Optionally excludes inactive projects from being returned", required = false, deprecated = true)
             @QueryParam("excludeInactive") boolean excludeInactive) {
         try (QueryManager qm = new QueryManager(getAlpineRequest())) {
             final Project project = qm.getObjectByUuid(Project.class, uuid);
+            if (enhancedStatusList.isEmpty()) {
+                enhancedStatusList = QueryManager.getEnhancedStatusList(excludeInactive);
+            }
+            List<Project.EnhancedStatus> finalEnhancedStatusList = enhancedStatusList;
             if (project != null) {
                 final Tag tag = qm.getTagByName(tagString);
-                final PaginatedResult result = qm.getChildrenProjects(tag, project.getUuid(), true, excludeInactive);
+                final PaginatedResult result = qm.getChildrenProjects(tag, project.getUuid(), true, finalEnhancedStatusList);
                 if (qm.hasAccess(super.getPrincipal(), project)) {
                     return Response.ok(result.getObjects()).header(TOTAL_COUNT_HEADER, result.getTotal()).build();
                 } else {
@@ -1026,13 +1071,20 @@ public class ProjectResource extends AlpineResource {
                                 @PathParam("uuid") @ValidUuid String uuid,
                                 @Parameter(description = "The optional name of the project to query on", required = false)
                                 @QueryParam("name") String name,
-                                @Parameter(description = "Optionally excludes inactive projects from being returned", required = false)
+                                @Parameter(description = "Filters by Project Status")
+                                @QueryParam(value = "enhancedStatus")
+                                List<Project.EnhancedStatus> enhancedStatusList,
+                                @Parameter(description = "Optionally excludes inactive projects from being returned", required = false, deprecated = true)
                                 @QueryParam("excludeInactive") boolean excludeInactive) {
         try (QueryManager qm = new QueryManager(getAlpineRequest())) {
             final Project project = qm.getObjectByUuid(Project.class, uuid);
+            if (enhancedStatusList.isEmpty()) {
+                enhancedStatusList = QueryManager.getEnhancedStatusList(excludeInactive);
+            }
+            List<Project.EnhancedStatus> finalEnhancedStatusList = enhancedStatusList;
             if (project != null) {
                 if (qm.hasAccess(super.getPrincipal(), project)) {
-                    final PaginatedResult result = (name != null) ? qm.getProjectsWithoutDescendantsOf(name, excludeInactive, project) : qm.getProjectsWithoutDescendantsOf(excludeInactive, project);
+                    final PaginatedResult result = (name != null) ? qm.getProjectsWithoutDescendantsOf(name, finalEnhancedStatusList, project) : qm.getProjectsWithoutDescendantsOf(finalEnhancedStatusList, project);
                     return Response.ok(result.getObjects()).header(TOTAL_COUNT_HEADER, result.getTotal()).build();
                 } else{
                     return Response.status(Response.Status.FORBIDDEN).entity("Access to the specified project is forbidden").build();

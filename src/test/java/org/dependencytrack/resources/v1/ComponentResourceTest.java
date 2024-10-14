@@ -75,7 +75,7 @@ public class ComponentResourceTest extends ResourceTest {
      * @throws MalformedPackageURLException
      */
     private Project prepareProject() throws MalformedPackageURLException {
-        final Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        final Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         final List<String> directDepencencies = new ArrayList<>();
         // Generate 1000 dependencies
         for (int i = 0; i < 1000; i++) {
@@ -218,7 +218,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getComponentByUuidTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("ABC");
@@ -244,7 +244,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getComponentByUuidWithRepositoryMetaDataTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("ABC");
@@ -275,7 +275,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getComponentByIdentityWithCoordinatesTest() {
-        final Project projectA = qm.createProject("projectA", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("projectA", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentA = new Component();
         componentA.setProject(projectA);
         componentA.setGroup("groupA");
@@ -285,7 +285,7 @@ public class ComponentResourceTest extends ResourceTest {
         componentA.setPurl("pkg:maven/groupA/nameA@versionA?foo=bar");
         qm.createComponent(componentA, false);
 
-        final Project projectB = qm.createProject("projectB", null, "1.0", null, null, null, true, false);
+        final Project projectB = qm.createProject("projectB", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentB = new Component();
         componentB.setProject(projectB);
         componentB.setGroup("groupB");
@@ -315,7 +315,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getComponentByIdentityWithPurlTest() {
-        final Project projectA = qm.createProject("projectA", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("projectA", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentA = new Component();
         componentA.setProject(projectA);
         componentA.setGroup("groupA");
@@ -325,7 +325,7 @@ public class ComponentResourceTest extends ResourceTest {
         componentA.setPurl("pkg:maven/groupA/nameA@versionA?foo=bar");
         qm.createComponent(componentA, false);
 
-        final Project projectB = qm.createProject("projectB", null, "1.0", null, null, null, true, false);
+        final Project projectB = qm.createProject("projectB", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentB = new Component();
         componentB.setProject(projectB);
         componentB.setGroup("groupB");
@@ -353,7 +353,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getComponentByIdentityWithCpeTest() {
-        final Project projectA = qm.createProject("projectA", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("projectA", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentA = new Component();
         componentA.setProject(projectA);
         componentA.setGroup("groupA");
@@ -363,7 +363,7 @@ public class ComponentResourceTest extends ResourceTest {
         componentA.setPurl("pkg:maven/groupA/nameA@versionA?foo=bar");
         qm.createComponent(componentA, false);
 
-        final Project projectB = qm.createProject("projectB", null, "1.0", null, null, null, true, false);
+        final Project projectB = qm.createProject("projectB", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentB = new Component();
         componentB.setProject(projectB);
         componentB.setGroup("groupB");
@@ -391,7 +391,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getComponentByIdentityWithProjectTest() {
-        final Project projectA = qm.createProject("projectA", null, "1.0", null, null, null, true, false);
+        final Project projectA = qm.createProject("projectA", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentA = new Component();
         componentA.setProject(projectA);
         componentA.setGroup("group");
@@ -400,7 +400,7 @@ public class ComponentResourceTest extends ResourceTest {
         componentA.setPurl("pkg:maven/group/name@version?foo=bar");
         qm.createComponent(componentA, false);
 
-        final Project projectB = qm.createProject("projectB", null, "1.0", null, null, null, true, false);
+        final Project projectB = qm.createProject("projectB", null, "1.0", null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         var componentB = new Component();
         componentB.setProject(projectB);
         componentB.setGroup("group");
@@ -441,7 +441,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getComponentByHashTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("ABC");
@@ -479,7 +479,7 @@ public class ComponentResourceTest extends ResourceTest {
         final var project = new Project();
         project.setName("acme-app");
         project.setVersion("1.0.0");
-        project.setActive(true);
+        project.setEnhancedStatus(Project.EnhancedStatus.IN_DEVELOPMENT);
         project.setAccessTeams(List.of(team));
         qm.persist(project);
 
@@ -502,7 +502,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void createComponentTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("My Component");
@@ -523,7 +523,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void createComponentUpperCaseHashTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("My Component");
@@ -557,7 +557,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void updateComponentTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("My Component");
@@ -589,7 +589,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void updateComponentEmptyNameTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("My Component");
@@ -646,7 +646,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void deleteComponentTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("My Component");
@@ -659,7 +659,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void deleteComponentInvalidUuidTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("My Component");
@@ -679,7 +679,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getDependencyGraphForComponentTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         Component component1 = new Component();
         component1.setProject(project);
@@ -740,7 +740,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getDependencyGraphForComponentTestWithRepositoryMetaData() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
 
         Component component1 = new Component();
         component1.setProject(project);
@@ -804,7 +804,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getDependencyGraphForComponentInvalidProjectUuidTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("My Component");
@@ -817,7 +817,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getDependencyGraphForComponentInvalidComponentUuidTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response response = jersey.target(V1_COMPONENT + "/project/" + project.getUuid() + "/dependencyGraph/" + UUID.randomUUID())
                 .request().header(X_API_KEY, apiKey).get();
         Assert.assertEquals(404, response.getStatus(), 0);
@@ -825,7 +825,7 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getDependencyGraphForComponentNoDependencyGraphTest() {
-        Project project = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project project = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(project);
         component.setName("My Component");
@@ -840,14 +840,14 @@ public class ComponentResourceTest extends ResourceTest {
 
     @Test
     public void getDependencyGraphForComponentIsNotComponentOfProject() {
-        Project projectWithComponent = qm.createProject("Acme Application", null, null, null, null, null, true, false);
+        Project projectWithComponent = qm.createProject("Acme Application", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Component component = new Component();
         component.setProject(projectWithComponent);
         component.setName("My Component");
         component.setVersion("1.0");
         component = qm.createComponent(component, false);
         projectWithComponent.setDirectDependencies("[{\"uuid\":\"" + component.getUuid() + "\"}]");
-        Project projectWithoutComponent = qm.createProject("Acme Library", null, null, null, null, null, true, false);
+        Project projectWithoutComponent = qm.createProject("Acme Library", null, null, null, null, null, Project.EnhancedStatus.IN_DEVELOPMENT, false);
         Response responseWithComponent = jersey.target(V1_COMPONENT + "/project/" + projectWithComponent.getUuid() + "/dependencyGraph/" + component.getUuid())
                 .request().header(X_API_KEY, apiKey).get();
         JsonObject jsonWithComponent = parseJsonObject(responseWithComponent);
